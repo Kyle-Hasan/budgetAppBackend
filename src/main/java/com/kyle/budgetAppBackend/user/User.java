@@ -13,7 +13,7 @@ import java.util.List;
 public class User extends BaseEntity {
 
     @Column(nullable = false, unique = true)
-    private String userName;
+    private String username;
     @Column(nullable = false)
     private String password;
 
@@ -21,7 +21,7 @@ public class User extends BaseEntity {
     private List<Budget> budgets;
 
 
-
+    @ManyToMany
     @JoinTable(name="users_role",
             joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
@@ -46,12 +46,12 @@ public class User extends BaseEntity {
 
     public String email;
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

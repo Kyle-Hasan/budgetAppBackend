@@ -2,29 +2,36 @@ package com.kyle.budgetAppBackend.user;
 
 import com.kyle.budgetAppBackend.role.Role;
 import com.kyle.budgetAppBackend.role.RoleRepository;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
+@Service
 public class UserServiceImpl implements  UserService{
 
     private UserRepository userRepository;
 
     private RoleRepository roleRepository;
 
-    private PasswordEncoder passwordEncoder;
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
+
     }
 
 
     @Override
-    public User updateUser(UserUpdateDto userUpdateDto) {
+    public User update(UserUpdateDto userUpdateDto) {
         Optional<User> existingUser = userRepository.findById(userUpdateDto.getId());
 
         if(existingUser.isEmpty()) {
@@ -37,7 +44,7 @@ public class UserServiceImpl implements  UserService{
         existingUserObj.setPassword(userUpdateDto.getUsername());
 
         if(userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
-            existingUserObj.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
+            existingUserObj.setPassword(passwordEncoder().encode(userUpdateDto.getPassword()));
         }
 
        return userRepository.save(existingUserObj);
@@ -48,13 +55,13 @@ public class UserServiceImpl implements  UserService{
         User user = new User();
 
         user.setEmail(signupDto.getEmail());
-        user.setUserName(signupDto.getUsername());
+        user.setUsername(signupDto.getUsername());
         Role userRole = roleRepository.findByName("USER");
         List<Role> roles = new ArrayList<Role>();
         roles.add(userRole);
         user.setRoles(roles);
 
-        user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
+        user.setPassword(passwordEncoder().encode(signupDto.getPassword()));
 
         userRepository.save(user);
 
@@ -70,7 +77,7 @@ public class UserServiceImpl implements  UserService{
                 return null;
             }
 
-            if(!passwordEncoder.matches(loginDto.getPassword(),userOptional.get().getPassword())) {
+            if(!passwordEncoder().matches(loginDto.getPassword(),userOptional.get().getPassword())) {
                 return null;
             }
 
@@ -85,12 +92,12 @@ public class UserServiceImpl implements  UserService{
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void delete(Long id) {
         userRepository.deleteById(id);
     }
 
     @Override
-    public Optional<User> getUserById(Long id) {
+    public Optional<User> getById(Long id) {
         return userRepository.findById(id);
     }
 }

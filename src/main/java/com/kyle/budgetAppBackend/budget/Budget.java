@@ -84,4 +84,13 @@ public class Budget extends BaseEntity {
     public void setTransactions(List<Transaction> transactions) {
         this.transactions = transactions;
     }
+
+    public void addTransactions(Transaction transaction) {
+        this.transactions.add(transaction);
+
+        transaction.setBudget(this);
+    }
+
+
+
 }

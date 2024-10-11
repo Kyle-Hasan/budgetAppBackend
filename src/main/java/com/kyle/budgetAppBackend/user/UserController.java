@@ -16,7 +16,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
-        Optional<User> optionalUser = userService.getUserById(id);
+        Optional<User> optionalUser = userService.getById(id);
 
         if(optionalUser.isPresent()){
             return optionalUser.get();
@@ -29,22 +29,26 @@ public class UserController {
 
     @PostMapping("/signup")
     public User signup(@RequestBody SignupDto signupDto) {
+
         return userService.signup(signupDto);
     }
 
     @PostMapping("/login")
     public User login(@RequestBody LoginDto loginDto) {
-        return userService.login(loginDto);
+
+         return userService.login(loginDto);
     }
 
     @PostMapping("")
     public User updateUser(@RequestBody UserUpdateDto userUpdateDto) {
-        return userService.updateUser(userUpdateDto);
+
+        return userService.update(userUpdateDto);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+
+        userService.delete(id);
     }
 
 }

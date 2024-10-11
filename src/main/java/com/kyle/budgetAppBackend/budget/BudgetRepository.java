@@ -1,6 +1,8 @@
 package com.kyle.budgetAppBackend.budget;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.kyle.budgetAppBackend.base.BaseRepository;
+import org.springframework.stereotype.Repository;
 
-public interface BudgetRepository extends JpaRepository<Budget,Long> {
+@Repository
+public interface BudgetRepository extends BaseRepository<Budget> {
 }

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    public User updateUser(UserUpdateDto userUpdateDto);
+    public User update(UserUpdateDto userUpdateDto);
 
     public User signup(SignupDto signupDto);
 
@@ -12,9 +12,9 @@ public interface UserService {
 
     public List<User> getAllUsers();
 
-    public void deleteUser(Long id);
+    public void delete(Long id);
 
-    public Optional<User> getUserById(Long id);
+    public Optional<User> getById(Long id);
 
 
 }
