@@ -1,11 +1,13 @@
 package com.kyle.budgetAppBackend.user;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.budget.Budget;
 import com.kyle.budgetAppBackend.role.Role;
 import jakarta.persistence.*;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,7 +20,8 @@ public class User extends BaseEntity {
     private String password;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
-    private List<Budget> budgets;
+    @JsonManagedReference
+    private List<Budget> budgets = new ArrayList<Budget>();
 
 
     @ManyToMany
@@ -26,7 +29,7 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private List<Role> roles;
+    private List<Role> roles = new ArrayList<Role>();
 
     public List<Role> getRoles() {
         return roles;
@@ -68,5 +71,10 @@ public class User extends BaseEntity {
 
     public void setBudgets(List<Budget> budgets) {
         this.budgets = budgets;
+    }
+
+    public void addBudget(Budget budget) {
+        this.budgets.add(budget);
+        budget.setUser(this);
     }
 }

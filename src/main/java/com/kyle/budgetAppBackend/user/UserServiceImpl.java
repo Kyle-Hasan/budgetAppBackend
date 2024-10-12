@@ -1,5 +1,6 @@
 package com.kyle.budgetAppBackend.user;
 
+import com.kyle.budgetAppBackend.budget.BudgetRepository;
 import com.kyle.budgetAppBackend.role.Role;
 import com.kyle.budgetAppBackend.role.RoleRepository;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class UserServiceImpl implements  UserService{
 
@@ -17,15 +20,18 @@ public class UserServiceImpl implements  UserService{
 
     private RoleRepository roleRepository;
 
+    private BudgetRepository budgetRepository;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BudgetRepository budgetRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.budgetRepository = budgetRepository;
 
     }
 
@@ -40,11 +46,27 @@ public class UserServiceImpl implements  UserService{
 
        var existingUserObj =  existingUser.get();
 
-        existingUserObj.setEmail(userUpdateDto.getEmail());
-        existingUserObj.setPassword(userUpdateDto.getUsername());
+        if(userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().isEmpty()) {
+            existingUserObj.setEmail(userUpdateDto.getEmail());
+        }
+
+        if(userUpdateDto.getUsername() != null && !userUpdateDto.getUsername().isEmpty()) {
+            existingUserObj.setUsername(userUpdateDto.getUsername());
+        }
 
         if(userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
             existingUserObj.setPassword(passwordEncoder().encode(userUpdateDto.getPassword()));
+        }
+
+        if(userUpdateDto.getBudgets() != null) {
+            var budgetsId = userUpdateDto.getBudgets().stream()
+                    .map(budget -> {
+                        return budget.getId();
+                    })
+                    .collect(Collectors.toList());
+
+            var budgets = budgetRepository.findAllById(budgetsId);
+            existingUserObj.setBudgets(budgets);
         }
 
        return userRepository.save(existingUserObj);

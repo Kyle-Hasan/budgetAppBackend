@@ -29,7 +29,7 @@ public class BudgetController {
         return budgetService.create(budget);
     }
 
-    @PatchMapping("")
+    @PutMapping("")
     public Budget saveBudget(@RequestBody Budget budget) {
         var budgetOptional =  budgetService.update(budget);
         if(budgetOptional.isPresent()){

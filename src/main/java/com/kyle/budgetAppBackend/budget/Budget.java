@@ -1,12 +1,13 @@
 package com.kyle.budgetAppBackend.budget;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.transaction.Transaction;
 import com.kyle.budgetAppBackend.user.User;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -16,19 +17,21 @@ public class Budget extends BaseEntity {
     @Column(nullable = false)
     private String name;
     private String description;
-    private Date createdAt;
+
     @Column(nullable = false)
     private double amount;
-    private Date updatedAt;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+
+    @ManyToOne()
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
 
 
 
     @OneToMany(mappedBy = "budget",cascade = CascadeType.ALL)
-    private List<Transaction> transactions;
+    @JsonManagedReference
+    private List<Transaction> transactions = new ArrayList<Transaction>();
 
     public String getName() {
         return name;
@@ -46,13 +49,7 @@ public class Budget extends BaseEntity {
         this.description = description;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
 
     public double getAmount() {
         return amount;
@@ -62,13 +59,7 @@ public class Budget extends BaseEntity {
         this.amount = amount;
     }
 
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
     public User getUser() {
         return user;
     }
@@ -85,7 +76,7 @@ public class Budget extends BaseEntity {
         this.transactions = transactions;
     }
 
-    public void addTransactions(Transaction transaction) {
+    public void addTransaction(Transaction transaction) {
         this.transactions.add(transaction);
 
         transaction.setBudget(this);

@@ -23,6 +23,8 @@ public abstract class BaseService<T extends BaseEntity> {
         return Optional.empty();
     }
 
+
+
     public Optional<T> get(Long id) {
         return baseRepository.findById(id);
     }
