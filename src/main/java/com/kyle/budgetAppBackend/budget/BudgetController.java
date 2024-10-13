@@ -1,12 +1,14 @@
 package com.kyle.budgetAppBackend.budget;
 
 import com.kyle.budgetAppBackend.budget.Budget;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/budgets")
+@RequestMapping("/api/budgets")
 public class BudgetController {
     private BudgetService budgetService;
     public BudgetController(BudgetService budgetService) {
@@ -24,8 +26,8 @@ public class BudgetController {
         }
     }
 
-    @PostMapping("")
-    public Budget createBudget(@RequestBody Budget budget) {
+    @PostMapping(value = "")
+    public Budget createBudget(@RequestBody Budget budget ) {
         return budgetService.create(budget);
     }
 

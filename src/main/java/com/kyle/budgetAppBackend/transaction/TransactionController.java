@@ -5,7 +5,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/transactions")
 public class TransactionController {
 
     private TransactionService transactionService;

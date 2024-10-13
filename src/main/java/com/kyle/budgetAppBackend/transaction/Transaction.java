@@ -16,21 +16,20 @@ public class Transaction extends BaseEntity {
     private String name;
     @Column(nullable = false)
     private double amount;
-    @Column(nullable = false)
-    private Date createdAt;
+
 
 
 
     @ManyToOne()
     @JoinColumn(name="budget_id")
-    @JsonBackReference
+
     private Budget budget;
 
 
 
     @ManyToOne()
     @JoinColumn(name="account_id")
-    @JsonBackReference
+
     private Account account;
 
     public Account getAccount() {
@@ -58,13 +57,7 @@ public class Transaction extends BaseEntity {
         this.amount = amount;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
 
     public Budget getBudget() {
         return budget;

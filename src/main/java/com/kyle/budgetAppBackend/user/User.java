@@ -1,6 +1,8 @@
 package com.kyle.budgetAppBackend.user;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.budget.Budget;
 import com.kyle.budgetAppBackend.role.Role;
@@ -16,13 +18,17 @@ public class User extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String username;
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
-    @JsonManagedReference
+
     private List<Budget> budgets = new ArrayList<Budget>();
 
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<Account> accounts = new ArrayList<Account>();
 
     @ManyToMany
     @JoinTable(name="users_role",
@@ -30,6 +36,23 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private List<Role> roles = new ArrayList<Role>();
+
+    @Column(nullable = false, unique = true)
+    public String email;
+
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+
+    public String getUsername() {
+        return username;
+    }
 
     public List<Role> getRoles() {
         return roles;
@@ -47,11 +70,6 @@ public class User extends BaseEntity {
         this.email = email;
     }
 
-    public String email;
-
-    public String getUsername() {
-        return username;
-    }
 
     public void setUsername(String username) {
         this.username = username;

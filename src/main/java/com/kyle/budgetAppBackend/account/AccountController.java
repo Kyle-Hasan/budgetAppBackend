@@ -5,7 +5,7 @@ import com.kyle.budgetAppBackend.account.AccountService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RequestMapping("/api/accounts")
 public class AccountController {
     private AccountService accountService;
     public AccountController(AccountService accountService) {

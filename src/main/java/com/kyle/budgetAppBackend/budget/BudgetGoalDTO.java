@@ -1,5 +1,8 @@
 package com.kyle.budgetAppBackend.budget;
 
+import jakarta.persistence.ColumnResult;
+import jakarta.persistence.SqlResultSetMapping;
+
 public class BudgetGoalDTO {
     private Long budgetId;
     private String budgetName;

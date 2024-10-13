@@ -1,5 +1,8 @@
 package com.kyle.budgetAppBackend.user;
 
+import com.kyle.budgetAppBackend.account.AccountRepository;
+import com.kyle.budgetAppBackend.account.CurrentAccountDTO;
+import com.kyle.budgetAppBackend.budget.BudgetGoalDTO;
 import com.kyle.budgetAppBackend.budget.BudgetRepository;
 import com.kyle.budgetAppBackend.role.Role;
 import com.kyle.budgetAppBackend.role.RoleRepository;
@@ -8,6 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,16 +27,17 @@ public class UserServiceImpl implements  UserService{
 
     private BudgetRepository budgetRepository;
 
-    @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    private AccountRepository accountRepository;
+
+    private PasswordEncoder passwordEncoder;
 
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BudgetRepository budgetRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, BudgetRepository budgetRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.budgetRepository = budgetRepository;
+        this.accountRepository = accountRepository;
+        this.passwordEncoder = passwordEncoder;
 
     }
 
@@ -55,7 +61,7 @@ public class UserServiceImpl implements  UserService{
         }
 
         if(userUpdateDto.getPassword() != null && !userUpdateDto.getPassword().isEmpty()) {
-            existingUserObj.setPassword(passwordEncoder().encode(userUpdateDto.getPassword()));
+            existingUserObj.setPassword(passwordEncoder.encode(userUpdateDto.getPassword()));
         }
 
         if(userUpdateDto.getBudgets() != null) {
@@ -83,7 +89,7 @@ public class UserServiceImpl implements  UserService{
         roles.add(userRole);
         user.setRoles(roles);
 
-        user.setPassword(passwordEncoder().encode(signupDto.getPassword()));
+        user.setPassword(passwordEncoder.encode(signupDto.getPassword()));
 
         userRepository.save(user);
 
@@ -99,7 +105,7 @@ public class UserServiceImpl implements  UserService{
                 return null;
             }
 
-            if(!passwordEncoder().matches(loginDto.getPassword(),userOptional.get().getPassword())) {
+            if(!passwordEncoder.matches(loginDto.getPassword(),userOptional.get().getPassword())) {
                 return null;
             }
 
@@ -121,5 +127,42 @@ public class UserServiceImpl implements  UserService{
     @Override
     public Optional<User> getById(Long id) {
         return userRepository.findById(id);
+    }
+
+    private String[] getStartAndEndMonth() {
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate = currentDate.withDayOfMonth(1);
+        LocalDate endDate = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String startDateString = startDate.format(formatter);
+        String endDateString = endDate.format(formatter);
+        String[] dates = new String[2];
+        dates[0] = startDateString;
+        dates[1] = endDateString;
+        return dates;
+
+
+    }
+
+    @Override
+    public HomeScreenInfoDTO getHomeScreenInfo(Long id) {
+        Optional<User> optionalUser = userRepository.findById(id);
+        if(optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            var dates = getStartAndEndMonth();
+            var budgetGoalObjs = budgetRepository.getBudgetGoals(dates[0],dates[1],user.getId());
+            var currentAccountObjs = accountRepository.getCurrentAccounts(dates[0],dates[1],user.getId());
+            List<BudgetGoalDTO> budgetGoalDTOs = budgetGoalObjs.stream().map(o -> new BudgetGoalDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
+            List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
+            Double budgetSpent = budgetGoalDTOs.stream().mapToDouble(b -> b.getTotalSpent()).sum();
+            Double accountsTotal = currentAccountDTOs.stream().mapToDouble(a -> a.getCurrentAccountBalance()).sum();
+            HomeScreenInfoDTO h = new HomeScreenInfoDTO(currentAccountDTOs,budgetGoalDTOs,budgetSpent,accountsTotal);
+
+            return h;
+        }
+
+
+        return null;
+
     }
 }

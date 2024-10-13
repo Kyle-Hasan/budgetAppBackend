@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public abstract class BaseService<T extends BaseEntity> {
 
-    private BaseRepository<T> baseRepository;
+    protected BaseRepository<T> baseRepository;
 
     public BaseService(BaseRepository<T> baseRepository) {
         this.baseRepository = baseRepository;

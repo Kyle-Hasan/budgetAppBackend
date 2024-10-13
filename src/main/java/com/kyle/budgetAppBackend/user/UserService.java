@@ -16,5 +16,7 @@ public interface UserService {
 
     public Optional<User> getById(Long id);
 
+    public HomeScreenInfoDTO getHomeScreenInfo(Long id);
+
 
 }

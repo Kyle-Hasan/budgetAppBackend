@@ -24,13 +24,13 @@ public class Budget extends BaseEntity {
 
     @ManyToOne()
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+
     private User user;
 
 
 
     @OneToMany(mappedBy = "budget",cascade = CascadeType.ALL)
-    @JsonManagedReference
+
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
     public String getName() {

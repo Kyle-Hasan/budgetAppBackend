@@ -4,7 +4,7 @@ public class SignupDto extends LoginDto{
     private String email;
 
     public SignupDto(String username, String password,String email) {
-        super(email,password);
+        super(username,password);
         this.email = email;
     }
 
