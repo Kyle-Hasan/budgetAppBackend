@@ -16,8 +16,8 @@ public class BudgetService extends BaseService<Budget> {
         super(baseRepository);
         this.transactionRepository = transactionRepository;
     }
-    @Override
-    public Optional<Budget> update(Budget t) {
+
+    public Optional<Budget> updateChangedOnly(Budget t) {
         Optional<Budget> oldBudget = baseRepository.findById(t.getId());
         if (oldBudget.isPresent()) {
             var transactionsIds = t.getTransactions().stream()

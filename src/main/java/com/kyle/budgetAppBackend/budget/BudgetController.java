@@ -33,7 +33,7 @@ public class BudgetController {
 
     @PutMapping("")
     public Budget saveBudget(@RequestBody Budget budget) {
-        var budgetOptional =  budgetService.update(budget);
+        var budgetOptional =  budgetService.updateChangedOnly(budget);
         if(budgetOptional.isPresent()){
             return budgetOptional.get();
         }

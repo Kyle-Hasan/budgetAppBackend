@@ -33,13 +33,11 @@ public class TransactionController {
 
     @PatchMapping("")
     public Transaction saveTransaction(@RequestBody Transaction transaction) {
-        var transactionOptional =  transactionService.update(transaction);
-        if(transactionOptional.isPresent()){
-            return transactionOptional.get();
-        }
-        else {
-            return null;
-        }
+        var oldTransaction = transactionService.get(transaction.getId());
+
+        return oldTransaction.map(value -> transactionService.updateChangedOnly(transaction, value)).orElse(null);
+
+
     }
 
     @DeleteMapping("")

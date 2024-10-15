@@ -30,7 +30,7 @@ public class AccountController {
 
     @PutMapping("")
     public Account saveAccount(@RequestBody Account account) {
-        var accountOptional =  accountService.update(account);
+        var accountOptional =  accountService.updateChangedOnly(account);
         if(accountOptional.isPresent()){
             return accountOptional.get();
         }

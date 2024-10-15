@@ -15,8 +15,8 @@ public class AccountService extends BaseService<Account> {
         super(baseRepository);
     }
 
-    @Override
-    public Optional<Account> update(Account t) {
+
+    public Optional<Account> updateChangedOnly (Account t) {
         Optional<Account> oldAccount = baseRepository.findById(t.getId());
         if (oldAccount.isPresent()) {
             var transactionsIds = t.getTransactions().stream()
@@ -27,7 +27,7 @@ public class AccountService extends BaseService<Account> {
 
             var transactions = transactionRepository.findAllById(transactionsIds);
             t.setTransactions(transactions);
-            return Optional.of(baseRepository.save(t));
+            return Optional.ofNullable(super.updateChangedOnly(t, oldAccount.get()));
         }
         return Optional.empty();
     }

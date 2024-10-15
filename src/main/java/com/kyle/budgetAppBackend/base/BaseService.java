@@ -21,7 +21,7 @@ public abstract class BaseService<T extends BaseEntity> {
         return baseRepository.save(t);
     }
     @PreAuthorize("this.checkAuthorizationById(#t.getId())")
-    public Optional<T> update(T t) {
+    public Optional<T> updateOverwrite(T t) {
 
 
         if (baseRepository.existsById(t.getId())) {
