@@ -14,6 +14,7 @@ public class BudgetService extends BaseService<Budget> {
 
     public BudgetService(BaseRepository<Budget> baseRepository, TransactionRepository transactionRepository) {
         super(baseRepository);
+        this.transactionRepository = transactionRepository;
     }
     @Override
     public Optional<Budget> update(Budget t) {
@@ -27,7 +28,7 @@ public class BudgetService extends BaseService<Budget> {
 
             var transactions = transactionRepository.findAllById(transactionsIds);
             t.setTransactions(transactions);
-            return Optional.of(baseRepository.save(t));
+            return Optional.ofNullable(super.updateChangedOnly(t, oldBudget.get()));
         }
         return Optional.empty();
     }

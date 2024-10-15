@@ -11,6 +11,7 @@ import java.util.Date;
 
 @Entity
 @Table(name="Transactions")
+@EntityListeners(BaseEntity.class)
 public class Transaction extends BaseEntity {
     @Column(nullable = false)
     private String name;

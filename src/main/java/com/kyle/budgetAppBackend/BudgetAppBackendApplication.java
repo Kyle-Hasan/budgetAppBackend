@@ -34,27 +34,28 @@ public class BudgetAppBackendApplication {
 	}
 
 	private void generateData(UserRepository userRepository, TransactionRepository transactionRepository, BudgetRepository budgetRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
+
 		User user = new User();
-		user.setUsername("reona");
+		user.setUsername("creator");
 		user.setPassword(passwordEncoder.encode("password"));
-		user.setEmail("email5@example.com");
+		user.setEmail("email589@example.com");
 		List<Account> accounts = new ArrayList<Account>();
 		for(int i = 0; i < 3; i++) {
 
 			Account account = new Account();
 			account.setName("Account " + i);
-			account.setBalance((double) (16*i));
+			account.setBalance((double) (11*i));
 			List<Transaction> transactionList = new ArrayList<Transaction>();
 			for(int j = 0 ; j < 3; j++) {
 				Transaction t = new Transaction();
 				t.setName("Transaction " + i + j + " account");
-				t.setAmount(j + i * 25);
+				t.setAmount(j + i * 21);
 				t.setAccount(account);
 				transactionList.add(t);
 
 
 			}
-			account.setUser(user);
+
 			account.setTransactions(transactionList);
 			accounts.add(account);
 
@@ -75,13 +76,14 @@ public class BudgetAppBackendApplication {
 
 			}
 			budget.setTransactions(transactionList);
-			budget.setUser(user);
+
 			budgets.add(budget);
 
 		}
 		user.setBudgets(budgets);
 		user.setAccounts(accounts);
 		userRepository.save(user);
-	}*/
+	}
 
+}*/
 }

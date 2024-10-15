@@ -1,5 +1,6 @@
 package com.kyle.budgetAppBackend.user;
 
+import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.budget.Budget;
 
 
@@ -16,9 +17,22 @@ public class UserUpdateDto {
     private List<Budget> budgets;
 
 
+
+    private List<Account> accounts;
+
     public List<Budget> getBudgets() {
         return budgets;
     }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+
 
     public void setTransactions(List<Budget> budgets) {
         this.budgets = budgets;

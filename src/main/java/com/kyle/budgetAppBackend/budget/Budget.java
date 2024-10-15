@@ -13,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name="budgets")
+@EntityListeners(BaseEntity.class)
 public class Budget extends BaseEntity {
     @Column(nullable = false)
     private String name;
@@ -22,10 +23,7 @@ public class Budget extends BaseEntity {
     private double amount;
 
 
-    @ManyToOne()
-    @JoinColumn(name = "user_id")
 
-    private User user;
 
 
 
@@ -60,13 +58,7 @@ public class Budget extends BaseEntity {
     }
 
 
-    public User getUser() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public List<Transaction> getTransactions() {
         return transactions;

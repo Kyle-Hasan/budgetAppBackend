@@ -1,5 +1,10 @@
 package com.kyle.budgetAppBackend.base;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,17 +20,40 @@ public abstract class BaseService<T extends BaseEntity> {
     public T create(T t) {
         return baseRepository.save(t);
     }
-
+    @PreAuthorize("this.checkAuthorizationById(#t.getId())")
     public Optional<T> update(T t) {
+
+
         if (baseRepository.existsById(t.getId())) {
             return Optional.of(baseRepository.save(t));
         }
         return Optional.empty();
     }
 
+    @PreAuthorize("this.checkAuthorization(#oldT)")
+    public T updateChangedOnly(T t, T oldT) {
+        Field[] fields = oldT.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            try {
+                Object value = field.get(t);
+                if (value != null) {
+                    field.set(oldT, value);
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
 
 
+        }
+
+        return this.baseRepository.save(oldT);
+    }
+
+
+    @PreAuthorize("this.checkAuthorizationById(#id)")
     public Optional<T> get(Long id) {
+
         return baseRepository.findById(id);
     }
 
@@ -33,8 +61,30 @@ public abstract class BaseService<T extends BaseEntity> {
         return baseRepository.findAll();
     }
 
+    @PreAuthorize("this.checkAuthorizationById(#id)")
     public void delete(Long id) {
+
         baseRepository.deleteById(id);
     }
+
+    public boolean checkAuthorization(T entity) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        var creator =  entity.getCreatedBy();
+        if(creator == null) {
+            return false;
+        }
+        else {
+          return  creator.getUsername().equals(username);
+        }
+
+    }
+
+    public  boolean checkAuthorizationById(Long id) {
+        Optional<T> optionalT = baseRepository.findById(id);
+        return (optionalT.isEmpty() || checkAuthorization(optionalT.get()));
+    }
+
+
 
 }

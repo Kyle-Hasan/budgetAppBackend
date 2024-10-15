@@ -12,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name="accounts")
+@EntityListeners(BaseEntity.class)
 public class Account extends BaseEntity {
     @Column(nullable = false)
     private String name;
@@ -22,10 +23,7 @@ public class Account extends BaseEntity {
 
 
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
 
-    private User user;
 
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
 
@@ -55,11 +53,5 @@ public class Account extends BaseEntity {
         this.balance = balance;
     }
 
-    public User getUser() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 }

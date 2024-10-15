@@ -1,7 +1,9 @@
 package com.kyle.budgetAppBackend.user;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.budget.Budget;
@@ -14,6 +16,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
+@EntityListeners(BaseEntity.class)
+@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
 public class User extends BaseEntity {
 
     @Column(nullable = false, unique = true)
@@ -22,12 +26,12 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "createdBy",cascade = CascadeType.ALL)
 
     private List<Budget> budgets = new ArrayList<Budget>();
 
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "createdBy",cascade = CascadeType.ALL)
     private List<Account> accounts = new ArrayList<Account>();
 
     @ManyToMany
@@ -91,8 +95,5 @@ public class User extends BaseEntity {
         this.budgets = budgets;
     }
 
-    public void addBudget(Budget budget) {
-        this.budgets.add(budget);
-        budget.setUser(this);
-    }
+
 }

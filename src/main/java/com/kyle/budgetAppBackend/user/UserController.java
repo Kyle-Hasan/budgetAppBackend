@@ -1,7 +1,7 @@
 package com.kyle.budgetAppBackend.user;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,9 @@ public class UserController {
     private AuthenticationManager authenticationManager;
     private PasswordEncoder passwordEncoder;
 
+    private SecurityContextRepository securityContextRepository =
+            new HttpSessionSecurityContextRepository();
+
     public UserController(UserService userService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
@@ -32,7 +37,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
-        Optional<User> optionalUser = userService.getById(id);
+        Optional<User> optionalUser = userService.findById(id);
 
         if(optionalUser.isPresent()){
             return optionalUser.get();
@@ -45,37 +50,25 @@ public class UserController {
 
     @GetMapping("")
     public List<User> getAllUsers() {
-        return userService.getAllUsers();
+        return userService.getAll();
     }
 
     @PostMapping("/signup")
-    public String signup(HttpServletRequest request, @RequestBody SignupDto signupDto) {
+    public String signup(HttpServletRequest request, HttpServletResponse response, @RequestBody SignupDto signupDto) {
 
-         userService.signup(signupDto);
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(signupDto.getUsername(), signupDto.getPassword())
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        securityContext.setAuthentication(authentication);
-        HttpSession session = request.getSession(true);
-        session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
 
-         return "signed up";
+        User user = userService.signup(signupDto);
+
+        addUserToSecurityContext(request,response,signupDto.getUsername(),signupDto.getPassword());
+
+        return "signed up";
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(HttpServletRequest request, @RequestBody LoginDto loginDto) {
+    public ResponseEntity<String> login(HttpServletRequest request, HttpServletResponse response, @RequestBody LoginDto loginDto) {
         try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword())
-            );
+            addUserToSecurityContext(request,response,loginDto.getUsername(),loginDto.getPassword());
 
-
-            SecurityContext securityContext = SecurityContextHolder.getContext();
-            securityContext.setAuthentication(authentication);
-            HttpSession session = request.getSession(true);
-            session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
             return ResponseEntity.ok("User authenticated successfully!");
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
@@ -96,9 +89,29 @@ public class UserController {
         userService.delete(id);
     }
 
-    @GetMapping("homescreen/{id}")
+    @GetMapping("/homescreen/{id}")
     public HomeScreenInfoDTO getHomeScreenInfo(@PathVariable Long id) {
         return userService.getHomeScreenInfo(id);
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
+
+        request.getSession().invalidate();
+        return "logged out";
+    }
+
+    private void addUserToSecurityContext(HttpServletRequest request, HttpServletResponse response,String username,String password) {
+
+        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(
+                username, password);
+        Authentication authentication = authenticationManager.authenticate(token);
+        SecurityContext context = SecurityContextHolder.createEmptyContext();;
+
+        SecurityContextHolder.setContext(context);
+        context.setAuthentication(authentication);
+        securityContextRepository.saveContext(context, request, response);
+
     }
 
 }
