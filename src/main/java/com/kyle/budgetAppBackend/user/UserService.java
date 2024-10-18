@@ -2,9 +2,7 @@ package com.kyle.budgetAppBackend.user;
 
 import com.kyle.budgetAppBackend.account.AccountRepository;
 import com.kyle.budgetAppBackend.account.CurrentAccountDTO;
-import com.kyle.budgetAppBackend.base.BaseRepository;
 import com.kyle.budgetAppBackend.base.BaseService;
-import com.kyle.budgetAppBackend.budget.Budget;
 import com.kyle.budgetAppBackend.budget.BudgetGoalDTO;
 import com.kyle.budgetAppBackend.budget.BudgetRepository;
 import com.kyle.budgetAppBackend.role.Role;
@@ -172,5 +170,10 @@ public class UserService extends BaseService<User> {
 
         return null;
 
+    }
+
+    public Optional<User> findByUsername(String username) {
+
+        return userRepository.findByUsername(username);
     }
 }

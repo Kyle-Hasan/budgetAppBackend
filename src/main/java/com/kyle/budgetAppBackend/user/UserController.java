@@ -1,5 +1,8 @@
 package com.kyle.budgetAppBackend.user;
 
+import com.kyle.budgetAppBackend.Token.Token;
+import com.kyle.budgetAppBackend.Token.TokenService;
+import com.kyle.budgetAppBackend.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -11,10 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,30 +24,22 @@ import java.util.Optional;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private UserService userService;
-    private AuthenticationManager authenticationManager;
-    private PasswordEncoder passwordEncoder;
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;  // Add TokenService for JWT handling
 
-    private SecurityContextRepository securityContextRepository =
-            new HttpSessionSecurityContextRepository();
-
-    public UserController(UserService userService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
+    public UserController(UserService userService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, TokenService tokenService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.tokenService = tokenService;
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
         Optional<User> optionalUser = userService.findById(id);
-
-        if(optionalUser.isPresent()){
-            return optionalUser.get();
-        }
-        else {
-            return null;
-        }
-
+        return optionalUser.orElse(null);  // Simplified null check
     }
 
     @GetMapping("")
@@ -54,38 +48,40 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signup(HttpServletRequest request, HttpServletResponse response, @RequestBody SignupDto signupDto) {
-
-
+    public ResponseEntity<TokenResponseDto> signup(@RequestBody SignupDto signupDto) {
+        // Create user in DB
         User user = userService.signup(signupDto);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
 
-        addUserToSecurityContext(request,response,signupDto.getUsername(),signupDto.getPassword());
+        // Authenticate and generate token
+        String[] tokens = authenticateAndGenerateToken(signupDto.getUsername(), signupDto.getPassword());
 
-        return "signed up";
+        return ResponseEntity.ok(new TokenResponseDto(tokens[0],tokens[1]));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(HttpServletRequest request, HttpServletResponse response, @RequestBody LoginDto loginDto) {
+    public ResponseEntity<TokenResponseDto> login(@RequestBody LoginDto loginDto) {
         try {
-            addUserToSecurityContext(request,response,loginDto.getUsername(),loginDto.getPassword());
+            // Authenticate and generate token
+            String[] tokens = authenticateAndGenerateToken(loginDto.getUsername(), loginDto.getPassword());
 
-            return ResponseEntity.ok("User authenticated successfully!");
+            return ResponseEntity.ok(new TokenResponseDto(tokens[0],tokens[1]));
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Authentication error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
     @PostMapping("")
     public User updateUser(@RequestBody UserUpdateDto userUpdateDto) {
-
         return userService.update(userUpdateDto);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-
         userService.delete(id);
     }
 
@@ -96,22 +92,34 @@ public class UserController {
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        tokenService.revokeAllUsernameTokens(username);
+        SecurityContextHolder.clearContext();
 
-        request.getSession().invalidate();
         return "logged out";
     }
 
-    private void addUserToSecurityContext(HttpServletRequest request, HttpServletResponse response,String username,String password) {
 
-        UsernamePasswordAuthenticationToken token = UsernamePasswordAuthenticationToken.unauthenticated(
-                username, password);
-        Authentication authentication = authenticationManager.authenticate(token);
-        SecurityContext context = SecurityContextHolder.createEmptyContext();;
+    private String[] authenticateAndGenerateToken(String username, String password) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        authenticationManager.authenticate(authenticationToken);
 
-        SecurityContextHolder.setContext(context);
-        context.setAuthentication(authentication);
-        securityContextRepository.saveContext(context, request, response);
+
+        Optional<User> userOptional = userService.findByUsername(username);
+        if(userOptional.isPresent()) {
+            tokenService.revokeAllUsernameTokens(userOptional.get().getUsername());
+            String refreshToken = tokenService.generateToken(userOptional.get(), new ArrayList<>(){},true);
+            String accessToken = tokenService.generateToken(userOptional.get(),new ArrayList<>(){},false);
+            String [] tokens = {refreshToken,accessToken};
+
+            return tokens;
+
+        }
+        else {
+            return null;
+        }
+
 
     }
-
 }

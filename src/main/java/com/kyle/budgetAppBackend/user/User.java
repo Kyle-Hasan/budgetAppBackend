@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.kyle.budgetAppBackend.Token.Token;
 import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.budget.Budget;
@@ -34,15 +35,31 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "createdBy",cascade = CascadeType.ALL)
     private List<Account> accounts = new ArrayList<Account>();
 
+
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+
     @ManyToMany
     @JoinTable(name="users_role",
             joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+
+
     private List<Role> roles = new ArrayList<Role>();
 
     @Column(nullable = false, unique = true)
     public String email;
+
+
+    public List<Token> getTokens() {
+        return tokens;
+    }
+
+    public void setTokens(List<Token> tokens) {
+        this.tokens = tokens;
+    }
+
 
 
     public List<Account> getAccounts() {

@@ -82,7 +82,10 @@ public abstract class BaseService<T extends BaseEntity> {
 
     public  boolean checkAuthorizationById(Long id) {
         Optional<T> optionalT = baseRepository.findById(id);
-        return (optionalT.isEmpty() || checkAuthorization(optionalT.get()));
+        if(optionalT.isEmpty()) {
+            return false;
+        }
+        return (checkAuthorization(optionalT.get()));
     }
 
 

@@ -1,13 +1,9 @@
 package com.kyle.budgetAppBackend.transaction;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.budget.Budget;
-import com.kyle.budgetAppBackend.user.User;
 import jakarta.persistence.*;
-
-import java.util.Date;
 
 @Entity
 @Table(name="Transactions")
@@ -40,6 +36,20 @@ public class Transaction extends BaseEntity {
     public void setAccount(Account account) {
         this.account = account;
     }
+
+
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+
+
+    public TransactionType getType() {
+        return type;
+    }
+
+    public void setType(TransactionType type) {
+        this.type = type;
+    }
+
 
 
     public String getName() {
