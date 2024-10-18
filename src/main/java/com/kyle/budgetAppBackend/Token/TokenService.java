@@ -1,5 +1,6 @@
 package com.kyle.budgetAppBackend.Token;
 
+import com.kyle.budgetAppBackend.role.Role;
 import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserRepository;
 import io.jsonwebtoken.Claims;
@@ -9,10 +10,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -53,12 +51,16 @@ public class TokenService {
         return claimsResolver.apply(claims);
     }
 
+    public List<String> extractRoles(String token) {
+        return extractClaim(token, Claims-> (List<String>)Claims.get("roles"));
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
     }
 
     private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        return extractExpiration(token).before(new Date(System.currentTimeMillis()));
     }
 
     public String generateToken(User user, List<String> roles, boolean isRefreshToken) {
@@ -85,25 +87,25 @@ public class TokenService {
     }
 
     public Boolean validateToken(String token, String username) {
-        String extractedUsername = extractUsername(token);  // Extract the username from the token
+        String extractedUsername = extractUsername(token);
 
-        boolean tokenExists = tokenRepository.findByToken(token).isPresent();
-        boolean isRevoked = tokenRepository.findByToken(token).map(Token::isRevoked).orElse(true);
+        Optional<Token> tokenOptional = tokenRepository.findByToken(token);
 
-        return (extractedUsername.equals(username) && !isTokenExpired(token) && tokenExists && !isRevoked);
+        return tokenOptional.isPresent() && (extractedUsername.equals(username) && !isTokenExpired(token) && !tokenOptional.get().isRevoked());
+
     }
 
 
 
     public void deleteAllOfUsernameTokens(String username) {
-        List<Long> tokenIds = tokenRepository.findAllValidTokenByUser(username).stream().map(t -> t.getId()).toList();
+        List<Long> tokenIds = tokenRepository.findAllValidTokenIdByUser(username);
         tokenRepository.deleteAllById(tokenIds);
     }
 
     public void revokeAllUsernameTokens(String username) {
-        List<Long> tokenIds = tokenRepository.findAllValidTokenByUser(username).stream().map(t -> t.getId()).toList();
+        List<Long> tokenIds = tokenRepository.findAllValidTokenIdByUser(username);
         List<Token> tokens = tokenRepository.findAllById(tokenIds);
-        tokens.stream().forEach(t-> t.setRevoked(true));
+        tokens.forEach(t-> t.setRevoked(true));
         tokenRepository.saveAll(tokens);
 
     }

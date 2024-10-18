@@ -5,6 +5,7 @@ import com.kyle.budgetAppBackend.user.User;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name="tokens")
 public class Token {
 
     @Id
@@ -15,10 +16,6 @@ public class Token {
     public String token;
 
     public boolean revoked;
-
-
-
-
 
     public boolean refreshToken;
 
