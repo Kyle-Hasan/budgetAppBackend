@@ -1,8 +1,6 @@
 package com.kyle.budgetAppBackend.user;
 
-import com.kyle.budgetAppBackend.Token.Token;
 import com.kyle.budgetAppBackend.Token.TokenService;
-import com.kyle.budgetAppBackend.security.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -11,7 +9,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -85,9 +82,12 @@ public class UserController {
         userService.delete(id);
     }
 
-    @GetMapping("/homescreen/{id}")
-    public HomeScreenInfoDTO getHomeScreenInfo(@PathVariable Long id) {
-        return userService.getHomeScreenInfo(id);
+    @GetMapping("/budgetScreen")
+    public HomeScreenInfoDTO getHomeScreenInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<User> user = userService.findByUsername(username);
+        return user.map(value -> userService.getBudgetScreen(value.getId())).orElse(null);
     }
 
     @PostMapping("/logout")

@@ -1,50 +1,47 @@
 package com.kyle.budgetAppBackend.budget;
 
-import jakarta.persistence.ColumnResult;
-import jakarta.persistence.SqlResultSetMapping;
-
 public class BudgetGoalDTO {
-    private Long budgetId;
-    private String budgetName;
-    private Double budgetAmount;
-    private Double totalSpent;
+    private Long id;
+    private String name;
+    private Double amount;
+    private Double total;
 
     public BudgetGoalDTO(Long budgetId, String budgetName, Double budgetAmount, Double totalSpent) {
-        this.budgetId = budgetId;
-        this.budgetName = budgetName;
-        this.budgetAmount = budgetAmount;
-        this.totalSpent = totalSpent;
+        this.id = budgetId;
+        this.name = budgetName;
+        this.amount = budgetAmount;
+        this.total = totalSpent;
     }
 
-    public Long getBudgetId() {
-        return budgetId;
+    public Long getId() {
+        return id;
     }
 
-    public void setBudgetId(Long budgetId) {
-        this.budgetId = budgetId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getBudgetName() {
-        return budgetName;
+    public String getName() {
+        return name;
     }
 
-    public void setBudgetName(String budgetName) {
-        this.budgetName = budgetName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Double getBudgetAmount() {
-        return budgetAmount;
+    public Double getAmount() {
+        return amount;
     }
 
-    public void setBudgetAmount(Double budgetAmount) {
-        this.budgetAmount = budgetAmount;
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 
-    public Double getTotalSpent() {
-        return totalSpent;
+    public Double getTotal() {
+        return total;
     }
 
-    public void setTotalSpent(Double totalSpent) {
-        this.totalSpent = totalSpent;
+    public void setTotal(Double total) {
+        this.total = total;
     }
 }

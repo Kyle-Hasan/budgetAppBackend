@@ -151,7 +151,7 @@ public class UserService extends BaseService<User> {
     }
 
     @PreAuthorize("this.checkAuthorizationById(#id)")
-    public HomeScreenInfoDTO getHomeScreenInfo(Long id) {
+    public HomeScreenInfoDTO getBudgetScreen(Long id) {
         Optional<User> optionalUser = this.userRepository.findById(id);
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -160,7 +160,7 @@ public class UserService extends BaseService<User> {
             var currentAccountObjs = accountRepository.getCurrentAccounts(dates[0],dates[1],user.getId());
             List<BudgetGoalDTO> budgetGoalDTOs = budgetGoalObjs.stream().map(o -> new BudgetGoalDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
             List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
-            Double budgetSpent = budgetGoalDTOs.stream().mapToDouble(b -> b.getTotalSpent()).sum();
+            Double budgetSpent = budgetGoalDTOs.stream().mapToDouble(b -> b.getTotal()).sum();
             Double accountsTotal = currentAccountDTOs.stream().mapToDouble(a -> a.getCurrentAccountBalance()).sum();
             HomeScreenInfoDTO h = new HomeScreenInfoDTO(currentAccountDTOs,budgetGoalDTOs,budgetSpent,accountsTotal);
 
