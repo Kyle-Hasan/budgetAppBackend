@@ -8,7 +8,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.function.Function;
@@ -87,11 +90,16 @@ public class TokenService {
     }
 
     public Boolean validateToken(String token, String username) {
-        String extractedUsername = extractUsername(token);
+        try {
+            String extractedUsername = extractUsername(token);
 
-        Optional<Token> tokenOptional = tokenRepository.findByToken(token);
+            Optional<Token> tokenOptional = tokenRepository.findByToken(token);
 
-        return tokenOptional.isPresent() && (extractedUsername.equals(username) && !isTokenExpired(token) && !tokenOptional.get().isRevoked());
+            return tokenOptional.isPresent() && (extractedUsername.equals(username) && !isTokenExpired(token) && !tokenOptional.get().isRevoked());
+        }
+        catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bad Token");
+        }
 
     }
 

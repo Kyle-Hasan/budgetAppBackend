@@ -1,6 +1,7 @@
 package com.kyle.budgetAppBackend.user;
 
 import com.kyle.budgetAppBackend.Token.TokenService;
+import com.kyle.budgetAppBackend.role.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -98,6 +99,23 @@ public class UserController {
         SecurityContextHolder.clearContext();
 
         return "logged out";
+    }
+
+    @GetMapping("/refresh")
+    public String refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<User> user = userService.findByUsername(username);
+        if(user.isPresent()) {
+            List<String> roles = user.get().getRoles().stream().map(Role::getName).toList();
+            return tokenService.generateToken(user.get(),roles,false);
+
+        }
+        else {
+            tokenService.revokeAllUsernameTokens(username);
+            SecurityContextHolder.clearContext();
+            return null;
+        }
     }
 
 
