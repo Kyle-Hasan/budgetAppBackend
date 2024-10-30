@@ -1,5 +1,6 @@
 package com.kyle.budgetAppBackend.base;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kyle.budgetAppBackend.user.User;
 
@@ -18,11 +19,16 @@ public abstract class BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+
+
     @CreatedDate
     @Column(updatable = false)
+    @JsonIgnore
     private LocalDateTime createdAt;
 
+
     @LastModifiedDate
+    @JsonIgnore
     private LocalDateTime updatedAt;
 
 
@@ -30,6 +36,8 @@ public abstract class BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference(value = "user")
+    @JsonIgnore
     private User createdBy;
 
     public User getCreatedBy() {
@@ -47,6 +55,23 @@ public abstract class BaseEntity {
     public void setId(Long id) {
         this.id = id;
     }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
 
 
 }

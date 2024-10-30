@@ -22,13 +22,8 @@ public class Budget extends BaseEntity {
     @Column(nullable = false)
     private double amount;
 
-
-
-
-
-
     @OneToMany(mappedBy = "budget",cascade = CascadeType.ALL)
-
+    @JsonManagedReference(value = "userTransactions")
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
     public String getName() {

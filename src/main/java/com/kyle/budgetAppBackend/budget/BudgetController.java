@@ -27,8 +27,8 @@ public class BudgetController {
     }
 
     @PostMapping(value = "")
-    public Budget createBudget(@RequestBody Budget budget ) {
-        return budgetService.create(budget);
+    public BudgetDTO createBudget(@RequestBody Budget budget ) {
+        return BudgetService.convertBudgetToDto(budgetService.create(budget));
     }
 
     @PutMapping("")

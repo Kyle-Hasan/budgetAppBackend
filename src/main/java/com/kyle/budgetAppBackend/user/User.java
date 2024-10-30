@@ -3,6 +3,7 @@ package com.kyle.budgetAppBackend.user;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.kyle.budgetAppBackend.Token.Token;
 import com.kyle.budgetAppBackend.account.Account;
@@ -28,11 +29,12 @@ public class User extends BaseEntity {
     private String password;
 
     @OneToMany(mappedBy = "createdBy",cascade = CascadeType.ALL)
-
+    @JsonManagedReference(value = "user")
     private List<Budget> budgets = new ArrayList<Budget>();
 
 
     @OneToMany(mappedBy = "createdBy",cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "user")
     private List<Account> accounts = new ArrayList<Account>();
 
 

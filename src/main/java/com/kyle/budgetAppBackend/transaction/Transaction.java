@@ -1,9 +1,12 @@
 package com.kyle.budgetAppBackend.transaction;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.budget.Budget;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="Transactions")
@@ -19,7 +22,7 @@ public class Transaction extends BaseEntity {
 
     @ManyToOne()
     @JoinColumn(name="budget_id")
-
+    @JsonBackReference(value = "userTransactions")
     private Budget budget;
 
 
@@ -28,6 +31,16 @@ public class Transaction extends BaseEntity {
     @JoinColumn(name="account_id")
 
     private Account account;
+
+    private LocalDateTime date;
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
 
     public Account getAccount() {
         return account;
