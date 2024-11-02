@@ -9,21 +9,20 @@ public class TransactionForListDTO {
     private String name;
     private LocalDateTime date;
 
-    private long budgetId;
-    private long accountId;
+    private ParentEntity account;
+    private ParentEntity budget;
 
-    public TransactionForListDTO(Long id, double amount, String name, long budgetId, long accountId,LocalDateTime date) {
+
+
+    public TransactionForListDTO(Long id, double amount, String name, LocalDateTime date, ParentEntity account, ParentEntity budget) {
         this.id = id;
         this.amount = amount;
         this.name = name;
-        this.accountId = accountId;
-        this.budgetId  = budgetId;
         this.date = date;
+        this.account = account;
+        this.budget = budget;
     }
 
-    public void setAccountId(long accountId) {
-        this.accountId = accountId;
-    }
 
     public Long getId() {
         return id;
@@ -57,15 +56,19 @@ public class TransactionForListDTO {
     }
 
 
-    public long getBudgetId() {
-        return budgetId;
+    public ParentEntity getAccount() {
+        return account;
     }
 
-    public void setBudgetId(long budgetId) {
-        this.budgetId = budgetId;
+    public void setAccount(ParentEntity account) {
+        this.account = account;
     }
 
-    public long getAccountId() {
-        return accountId;
+    public ParentEntity getBudget() {
+        return budget;
+    }
+
+    public void setBudget(ParentEntity budget) {
+        this.budget = budget;
     }
 }

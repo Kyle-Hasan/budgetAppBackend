@@ -2,9 +2,11 @@ package com.kyle.budgetAppBackend.budget;
 
 import com.kyle.budgetAppBackend.base.BaseRepository;
 import com.kyle.budgetAppBackend.base.BaseService;
+import com.kyle.budgetAppBackend.transaction.ParentEntity;
 import com.kyle.budgetAppBackend.transaction.Transaction;
 import com.kyle.budgetAppBackend.transaction.TransactionForListDTO;
 import com.kyle.budgetAppBackend.transaction.TransactionRepository;
+import com.kyle.budgetAppBackend.user.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +16,12 @@ import java.util.stream.Collectors;
 @Service
 public class BudgetService extends BaseService<Budget> {
     private TransactionRepository transactionRepository;
+    private BudgetRepository budgetRepository;
 
-    public BudgetService(BaseRepository<Budget> baseRepository, TransactionRepository transactionRepository) {
-        super(baseRepository);
+    public BudgetService(TransactionRepository transactionRepository, BudgetRepository budgetRepository) {
+        super(budgetRepository);
         this.transactionRepository = transactionRepository;
+        this.budgetRepository = budgetRepository;
     }
 
     public Optional<Budget> updateChangedOnly(Budget t) {
@@ -36,13 +40,35 @@ public class BudgetService extends BaseService<Budget> {
         return Optional.empty();
     }
 
-    private static List<TransactionForListDTO> convertTransactionsToDto(List<Transaction> transactions, long budgetId) {
-        return transactions.stream().map(t -> new TransactionForListDTO(t.getId(),t.getAmount(),t.getName(),budgetId,t.getAccount().getId(),t.getDate())).toList();
+    public List<ParentEntity> budgetSelectionsUser(Long userId) {
+        var budgetObjs= budgetRepository.getBudgetsUser(userId);
+
+        return budgetObjs.stream().map(o -> new ParentEntity((Long) o[0], (String) o[1])).toList();
+    }
+
+    private static List<TransactionForListDTO> convertTransactionsToDto(List<Transaction> transactions, long budgetId,String budgetName) {
+        ParentEntity budget = new ParentEntity();
+        budget.setName(budgetName);
+        budget.setId(budgetId);
+        return transactions.stream().map(t -> new TransactionForListDTO(t.getId(),t.getAmount(),t.getName(),t.getDate(),null,budget)).toList();
     }
 
     public static BudgetDTO convertBudgetToDto(Budget budget) {
-        List<TransactionForListDTO> transactionForListDTOS = convertTransactionsToDto(budget.getTransactions(), budget.getId());
+        List<TransactionForListDTO> transactionForListDTOS = convertTransactionsToDto(budget.getTransactions(), budget.getId(), budget.getName());
         return new BudgetDTO(budget.getId(), budget.getName(), budget.getDescription(), budget.getAmount(), transactionForListDTOS);
     }
+
+    public static Budget convertDtoToBudget(BudgetDTO dto) {
+            Budget budget = new Budget();
+            List<Transaction> transactions = dto.transactions.stream().map(t-> {
+                Transaction newT = new Transaction();
+                newT.setId(t.getId());
+                return newT;
+            }).toList();
+
+            return budget;
+    }
+
+
 
 }

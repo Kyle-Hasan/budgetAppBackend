@@ -27,4 +27,14 @@ public interface BudgetRepository extends BaseRepository<Budget> {
             "GROUP BY " +
             "    b.id, b.name, b.amount;", nativeQuery = true)
     ArrayList<Object[]> getBudgetGoals(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("userId") Long userId);
+
+
+    @Query(value = "SELECT DISTINCT " +
+    "    b.id as id," +
+    "    b.name as name \n" +
+    " FROM budgets AS b \n" +
+    " JOIN " +
+    " users as u on b.user_id = :userId;",nativeQuery = true
+     )
+    ArrayList<Object[]> getBudgetsUser(@Param("userId") Long userId);
 }

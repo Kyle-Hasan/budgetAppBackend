@@ -4,11 +4,11 @@ import com.kyle.budgetAppBackend.base.BaseRepository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.List;
 
-
+@Repository
 public interface AccountRepository extends BaseRepository<Account> {
     @Query(value = "SELECT " +
             "    a.id AS accountId, " +
@@ -26,4 +26,13 @@ public interface AccountRepository extends BaseRepository<Account> {
             "GROUP BY " +
             "    a.id, a.name, a.balance;",nativeQuery = true)
     ArrayList<Object[]> getCurrentAccounts(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("userId") Long userId);
+
+    @Query(value = "SELECT DISTINCT " +
+    " a.id as accountId, " +
+    " a.name as accountName " +
+    " FROM \n" +
+    " accounts as a\n" +
+    "JOIN \n" +
+    "users as u ON (a.user_id = :userId);", nativeQuery = true)
+    ArrayList<Object[]> getAccountsUser(@Param("userId") Long userId);
 }
