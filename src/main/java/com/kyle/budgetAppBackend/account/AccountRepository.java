@@ -13,7 +13,7 @@ public interface AccountRepository extends BaseRepository<Account> {
     @Query(value = "SELECT " +
             "    a.id AS accountId, " +
             "    a.name AS accountName, " +
-            "    a.balance + COALESCE(SUM(t.amount), 0) AS currentAccountBalance, " +
+            "    a.balance + COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN -t.amount WHEN t.type = 'INCOME' THEN t.amount ELSE 0 END), 0) AS currentAccountBalance, " +
             "    COALESCE(SUM(t.amount), 0) AS amountDeposited\n" +
             "FROM \n" +
             "    accounts AS a\n" +

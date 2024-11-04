@@ -27,15 +27,15 @@ public class TransactionController {
     }
 
     @PostMapping("")
-    public Transaction createTransaction(@RequestBody Transaction transaction) {
-        return transactionService.create(transaction);
+    public TransactionForListDTO createTransaction(@RequestBody Transaction transaction) {
+        return TransactionService.convertTransactionToDto(transactionService.create(transaction));
     }
 
     @PatchMapping("")
-    public Transaction saveTransaction(@RequestBody Transaction transaction) {
+    public TransactionForListDTO saveTransaction(@RequestBody Transaction transaction) {
         var oldTransaction = transactionService.get(transaction.getId());
 
-        return oldTransaction.map(value -> transactionService.updateChangedOnly(transaction, value)).orElse(null);
+        return TransactionService.convertTransactionToDto(oldTransaction.map(value -> transactionService.updateChangedOnly(transaction, value)).orElse(null));
 
 
     }

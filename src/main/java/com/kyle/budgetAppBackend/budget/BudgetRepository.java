@@ -15,7 +15,7 @@ public interface BudgetRepository extends BaseRepository<Budget> {
             "    b.id AS budgetId, " +
             "    b.name AS budgetName, " +
             "    b.amount AS budgetAmount, " +
-            "    COALESCE(SUM(t.amount), 0) AS totalSpent \n" +
+            "    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount WHEN t.type = 'INCOME' THEN -t.amount ELSE 0 END), 0) AS totalSpent \n" +
             "FROM " +
             "    budgets AS b \n" +
             "LEFT JOIN " +

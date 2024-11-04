@@ -39,7 +39,7 @@ public class BudgetController {
         return BudgetService.convertBudgetToDto(budgetService.create(budget));
     }
 
-    @PutMapping("")
+    @PatchMapping("")
     public Budget saveBudget(@RequestBody Budget budget) {
         var budgetOptional =  budgetService.updateChangedOnly(budget);
         if(budgetOptional.isPresent()){

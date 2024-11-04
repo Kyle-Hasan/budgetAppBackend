@@ -2,13 +2,11 @@ package com.kyle.budgetAppBackend.budget;
 
 import com.kyle.budgetAppBackend.base.BaseRepository;
 import com.kyle.budgetAppBackend.base.BaseService;
-import com.kyle.budgetAppBackend.transaction.ParentEntity;
-import com.kyle.budgetAppBackend.transaction.Transaction;
-import com.kyle.budgetAppBackend.transaction.TransactionForListDTO;
-import com.kyle.budgetAppBackend.transaction.TransactionRepository;
+import com.kyle.budgetAppBackend.transaction.*;
 import com.kyle.budgetAppBackend.user.User;
 import org.springframework.stereotype.Service;
 
+import javax.xml.crypto.dsig.TransformService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,6 +38,26 @@ public class BudgetService extends BaseService<Budget> {
         return Optional.empty();
     }
 
+    @Override
+    public Budget create(Budget budget) {
+
+        // check if any new transactions exist
+        List<Transaction> uncreated = budget.getTransactions().stream().filter(t -> t.getId() == -1).toList();
+
+
+
+        Budget retVal = super.create(budget);
+
+        List<Transaction> created = transactionRepository.saveAll(uncreated.stream().map(t -> {
+            t.setBudget(retVal);
+            return t;
+        }).toList());
+
+        retVal.setTransactions(created);
+
+        return retVal;
+    }
+
     public List<ParentEntity> budgetSelectionsUser(Long userId) {
         var budgetObjs= budgetRepository.getBudgetsUser(userId);
 
@@ -50,7 +68,7 @@ public class BudgetService extends BaseService<Budget> {
         ParentEntity budget = new ParentEntity();
         budget.setName(budgetName);
         budget.setId(budgetId);
-        return transactions.stream().map(t -> new TransactionForListDTO(t.getId(),t.getAmount(),t.getName(),t.getDate(),null,budget)).toList();
+        return transactions.stream().map(TransactionService::convertTransactionToDto).toList();
     }
 
     public static BudgetDTO convertBudgetToDto(Budget budget) {

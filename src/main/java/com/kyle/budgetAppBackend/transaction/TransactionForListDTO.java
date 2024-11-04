@@ -9,18 +9,31 @@ public class TransactionForListDTO {
     private String name;
     private LocalDateTime date;
 
+
+
+    private String type;
+
     private ParentEntity account;
     private ParentEntity budget;
 
 
 
-    public TransactionForListDTO(Long id, double amount, String name, LocalDateTime date, ParentEntity account, ParentEntity budget) {
+    public TransactionForListDTO(Long id, double amount, String name, LocalDateTime date, ParentEntity account, ParentEntity budget,String type) {
         this.id = id;
         this.amount = amount;
         this.name = name;
         this.date = date;
         this.account = account;
         this.budget = budget;
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
 

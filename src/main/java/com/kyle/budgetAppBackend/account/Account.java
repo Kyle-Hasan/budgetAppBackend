@@ -26,7 +26,7 @@ public class Account extends BaseEntity {
 
 
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
-
+    @JsonManagedReference(value = "userTransactionsAccount")
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
     public String getName() {

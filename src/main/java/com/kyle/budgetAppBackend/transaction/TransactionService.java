@@ -13,4 +13,24 @@ public class TransactionService extends BaseService<Transaction> {
     public TransactionService(BaseRepository<Transaction> baseRepository) {
         super(baseRepository);
     }
+
+    public static TransactionForListDTO convertTransactionToDto(Transaction t) {
+        ParentEntity account = null;
+        ParentEntity budget = null;
+        var fullAccount = t.getAccount();
+        var fullBudget = t.getBudget();
+        if(fullBudget != null) {
+            budget = new ParentEntity(fullBudget.getId(),fullBudget.getName());
+        }
+
+        if(fullAccount != null) {
+            account = new ParentEntity(fullAccount.getId(),fullAccount.getName());
+        }
+        String type = null;
+        if(t.getType() != null) {
+            type = t.getType().toString();
+        }
+        return new TransactionForListDTO(t.getId(),t.getAmount(),t.getName(),t.getDate(),account,budget,type);
+
+    }
 }

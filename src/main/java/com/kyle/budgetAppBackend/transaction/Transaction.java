@@ -29,7 +29,7 @@ public class Transaction extends BaseEntity {
 
     @ManyToOne()
     @JoinColumn(name="account_id")
-
+    @JsonBackReference(value = "userTransactionsAccount")
     private Account account;
 
     private LocalDateTime date;
