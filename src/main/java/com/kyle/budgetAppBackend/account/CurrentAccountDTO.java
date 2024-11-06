@@ -1,32 +1,32 @@
 package com.kyle.budgetAppBackend.account;
 
 public class CurrentAccountDTO {
-    private Long accountId;
-    private String accountName;
+    private Long id;
+    private String name;
     private Double currentAccountBalance;
     private Double amountDeposited;
 
     public CurrentAccountDTO(Long accountId, String accountName, Double currentAccountBalance, Double amountDeposited) {
-        this.accountId = accountId;
-        this.accountName = accountName;
+        this.id = accountId;
+        this.name = accountName;
         this.currentAccountBalance = currentAccountBalance;
         this.amountDeposited = amountDeposited;
     }
 
-    public Long getAccountId() {
-        return accountId;
+    public Long getId() {
+        return id;
     }
 
-    public void setAccountId(Long accountId) {
-        this.accountId = accountId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getAccountName() {
-        return accountName;
+    public String getName() {
+        return name;
     }
 
-    public void setAccountName(String accountName) {
-        this.accountName = accountName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Double getCurrentAccountBalance() {

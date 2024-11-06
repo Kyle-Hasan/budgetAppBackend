@@ -1,10 +1,8 @@
 package com.kyle.budgetAppBackend.account;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.transaction.Transaction;
-import com.kyle.budgetAppBackend.user.User;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -18,10 +16,8 @@ public class Account extends BaseEntity {
     private String name;
 
 
-    @Column(updatable = false)
-    private Double balance;
 
-
+    private Double startingBalance;
 
 
 
@@ -45,12 +41,12 @@ public class Account extends BaseEntity {
         this.transactions = transactions;
     }
 
-    public Double getBalance() {
-        return balance;
+    public Double getStartingBalance() {
+        return startingBalance;
     }
 
-    public void setBalance(Double balance) {
-        this.balance = balance;
+    public void setStartingBalance(Double startingBalance) {
+        this.startingBalance = startingBalance;
     }
 
 

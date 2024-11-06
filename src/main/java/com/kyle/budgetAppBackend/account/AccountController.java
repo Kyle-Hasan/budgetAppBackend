@@ -2,6 +2,7 @@ package com.kyle.budgetAppBackend.account;
 
 import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.account.AccountService;
+import com.kyle.budgetAppBackend.base.BaseController;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
 import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserService;
@@ -13,19 +14,27 @@ import java.util.List;
 import java.util.Optional;
 @RestController
 @RequestMapping("/api/accounts")
-public class AccountController {
+public class AccountController extends BaseController {
     private AccountService accountService;
-    private UserService userService;
+
     public AccountController(AccountService accountService, UserService userService) {
+        super(userService);
         this.accountService = accountService;
-        this.userService = userService;
+
     }
 
     @GetMapping("/{id}")
-    public Account getAccount(@PathVariable Long id) {
-        var accountOptional =  accountService.get(id);
-        if(accountOptional.isPresent()){
-            return accountOptional.get();
+    public CurrentAccountDTO getAccount(@PathVariable Long id) {
+
+        var user = getUser();
+
+        if(user == null) {
+            return null;
+        }
+
+        var currentAccountDTO =  accountService.getAccountInfo(user.getId(),id);
+        if(currentAccountDTO != null){
+            return currentAccountDTO;
         }
         else {
             return null;
@@ -72,4 +81,16 @@ public class AccountController {
         }
 
     }
+
+    @GetMapping("/userAccounts")
+    public List<CurrentAccountDTO> getUserAccounts() {
+        User user = getUser();
+        if(user == null) {
+            return  null;
+        }
+        List<CurrentAccountDTO> currentAccountDTOS = accountService.getAccountsInfo(user.getId());
+        return currentAccountDTOS;
+    }
+
+
 }
