@@ -1,16 +1,20 @@
 package com.kyle.budgetAppBackend.transaction;
 
+import com.kyle.budgetAppBackend.base.BaseController;
+import com.kyle.budgetAppBackend.user.User;
+import com.kyle.budgetAppBackend.user.UserService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/api/transactions")
-public class TransactionController {
+public class TransactionController extends BaseController {
 
     private TransactionService transactionService;
 
-    public TransactionController(TransactionService transactionService) {
+    public TransactionController(TransactionService transactionService, UserService userService) {
+        super(userService);
         this.transactionService = transactionService;
     }
 
@@ -49,4 +53,12 @@ public class TransactionController {
     public List<Transaction> getTransactions() {
         return transactionService.getAll();
     }
+
+    @GetMapping("userTransactions")
+    public List<TransactionForListDTO> getTransactionDtoUsers() {
+        User user = getUser();
+        return transactionService.getUserTransactions(user.getId());
+    }
+
+
 }

@@ -9,9 +9,10 @@ import java.util.List;
 
 public class TransactionService extends BaseService<Transaction> {
 
-
-    public TransactionService(BaseRepository<Transaction> baseRepository) {
-        super(baseRepository);
+    private TransactionRepository transactionRepository;
+    public TransactionService(TransactionRepository transactionRepository) {
+        super(transactionRepository);
+        this.transactionRepository = transactionRepository;
     }
 
     public static TransactionForListDTO convertTransactionToDto(Transaction t) {
@@ -32,5 +33,10 @@ public class TransactionService extends BaseService<Transaction> {
         }
         return new TransactionForListDTO(t.getId(),t.getAmount(),t.getName(),t.getDate(),account,budget,type);
 
+    }
+
+    public List<TransactionForListDTO> getUserTransactions(Long userId) {
+        List<Transaction> transactions = transactionRepository.getUserTransactions(userId);
+        return transactions.stream().map(TransactionService::convertTransactionToDto).toList();
     }
 }
