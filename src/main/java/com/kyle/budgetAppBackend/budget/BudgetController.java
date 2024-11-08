@@ -24,10 +24,10 @@ public class BudgetController {
     }
 
     @GetMapping("/{id}")
-    public Budget getBudget(@PathVariable Long id) {
+    public BudgetDTO getBudget(@PathVariable Long id) {
         var budgetOptional =  budgetService.get(id);
         if(budgetOptional.isPresent()){
-            return budgetOptional.get();
+            return BudgetService.convertBudgetToDto(budgetOptional.get());
         }
         else {
             return null;
@@ -50,7 +50,7 @@ public class BudgetController {
         }
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("/{id}")
     public void deleteBudget(@PathVariable Long id) {
         budgetService.delete(id);
     }

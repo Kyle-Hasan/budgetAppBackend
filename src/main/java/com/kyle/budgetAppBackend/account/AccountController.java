@@ -4,6 +4,8 @@ import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.account.AccountService;
 import com.kyle.budgetAppBackend.base.BaseController;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
+import com.kyle.budgetAppBackend.transaction.TransactionRepository;
+import com.kyle.budgetAppBackend.transaction.TransactionService;
 import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserService;
 import org.springframework.security.core.Authentication;
@@ -24,7 +26,7 @@ public class AccountController extends BaseController {
     }
 
     @GetMapping("/{id}")
-    public CurrentAccountDTO getAccount(@PathVariable Long id) {
+    public AccountDTO getAccount(@PathVariable Long id) {
 
         var user = getUser();
 
@@ -32,9 +34,9 @@ public class AccountController extends BaseController {
             return null;
         }
 
-        var currentAccountDTO =  accountService.getAccountInfo(user.getId(),id);
-        if(currentAccountDTO != null){
-            return currentAccountDTO;
+        Optional<Account> optional = accountService.get(id);
+        if(optional.isPresent()) {
+            return AccountService.convertToDto(optional.get());
         }
         else {
             return null;
@@ -57,7 +59,7 @@ public class AccountController extends BaseController {
         }
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("/{id}")
     public void deleteAccount(@PathVariable Long id) {
         accountService.delete(id);
     }
@@ -91,6 +93,8 @@ public class AccountController extends BaseController {
         List<CurrentAccountDTO> currentAccountDTOS = accountService.getAccountsInfo(user.getId());
         return currentAccountDTOS;
     }
+
+
 
 
 }

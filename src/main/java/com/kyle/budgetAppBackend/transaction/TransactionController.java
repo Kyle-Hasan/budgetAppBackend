@@ -44,7 +44,7 @@ public class TransactionController extends BaseController {
 
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("/{id}")
     public void deleteTransaction(@PathVariable Long id) {
         transactionService.delete(id);
     }

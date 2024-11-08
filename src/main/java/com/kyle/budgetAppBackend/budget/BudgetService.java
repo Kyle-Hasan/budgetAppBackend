@@ -64,7 +64,7 @@ public class BudgetService extends BaseService<Budget> {
         return budgetObjs.stream().map(o -> new ParentEntity((Long) o[0], (String) o[1])).toList();
     }
 
-    private static List<TransactionForListDTO> convertTransactionsToDto(List<Transaction> transactions, long budgetId,String budgetName) {
+    public static List<TransactionForListDTO> convertTransactionsToDto(List<Transaction> transactions, long budgetId,String budgetName) {
         ParentEntity budget = new ParentEntity();
         budget.setName(budgetName);
         budget.setId(budgetId);

@@ -1,8 +1,11 @@
 package com.kyle.budgetAppBackend.account;
 
 import com.kyle.budgetAppBackend.base.BaseService;
+import com.kyle.budgetAppBackend.budget.BudgetService;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
+import com.kyle.budgetAppBackend.transaction.TransactionForListDTO;
 import com.kyle.budgetAppBackend.transaction.TransactionRepository;
+import com.kyle.budgetAppBackend.transaction.TransactionService;
 import com.kyle.budgetAppBackend.user.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +17,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.kyle.budgetAppBackend.budget.BudgetService.convertTransactionsToDto;
+
 @Service
 public class AccountService extends BaseService<Account> {
 
@@ -47,11 +53,22 @@ public class AccountService extends BaseService<Account> {
         return accountObjs.stream().map(o -> new ParentEntity((Long) o[0], (String) o[1])).toList();
     }
 
+    private String[] getDateStrings() {
+        LocalDateTime minDate = LocalDateTime.of(1700, 1, 1, 0, 0, 0);
+        LocalDateTime today = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String minDateString = minDate.format(formatter);
+        String todayString = today.format(formatter);
+        String[] arr = new String[2];
+        arr[0] = minDateString;
+        arr[1] = todayString;
+        return arr;
+    }
+
 
     public CurrentAccountDTO getAccountInfo(Long userId, Long accountId) {
-        LocalDateTime minDate = LocalDateTime.of(-4713, 1, 1, 0, 0, 0);
-        LocalDateTime today = LocalDateTime.now();
-        var currentAccountObjs = accountRepository.getAccountUser(userId,accountId,minDate.toString(),today.toString());
+        String[] dateRanges = getDateStrings();
+        var currentAccountObjs = accountRepository.getAccountUser(userId,accountId,dateRanges[0],dateRanges[1]);
 
         List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
         if(currentAccountDTOs.isEmpty()) {
@@ -63,16 +80,18 @@ public class AccountService extends BaseService<Account> {
     }
 
     public List<CurrentAccountDTO> getAccountsInfo(Long userId) {
-        LocalDateTime minDate = LocalDateTime.of(1700, 1, 1, 0, 0, 0);
-        LocalDateTime today = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String minDateString = minDate.format(formatter);
-        String todayString = today.format(formatter);
+        String[] dateRanges = getDateStrings();
 
-        var currentAccountObjs = accountRepository.getCurrentAccounts(minDateString,todayString,userId);
+
+        var currentAccountObjs = accountRepository.getCurrentAccounts(dateRanges[0],dateRanges[1],userId);
         List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
         return  currentAccountDTOs;
 
+    }
+
+    public static AccountDTO convertToDto(Account a) {
+        List<TransactionForListDTO> transactionForListDTOS = BudgetService.convertTransactionsToDto(a.getTransactions(), a.getId(), a.getName());
+        return new AccountDTO(a.getId(),a.getName(),a.getStartingBalance(), transactionForListDTOS);
     }
 
 
