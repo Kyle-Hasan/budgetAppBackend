@@ -15,15 +15,13 @@ public interface BudgetRepository extends BaseRepository<Budget> {
             "    b.id AS budgetId, " +
             "    b.name AS budgetName, " +
             "    b.amount AS budgetAmount, " +
-            "    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount WHEN t.type = 'INCOME' THEN -t.amount ELSE 0 END), 0) AS totalSpent \n" +
+            "    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount WHEN t.type = 'INCOME' THEN 0 ELSE 0 END), 0) AS totalSpent \n" +
             "FROM " +
             "    budgets AS b \n" +
             "LEFT JOIN " +
-            "    transactions AS t ON b.id = t.budget_id \n" +
+            "    transactions AS t ON (b.id = t.budget_id AND t.date >= TO_TIMESTAMP(:startDate, 'YYYY-MM-DD HH24:MI:SS') AND t.date <= TO_TIMESTAMP(:endDate, 'YYYY-MM-DD HH24:MI:SS'))\n" +
             "WHERE " +
             "    b.user_id = :userId \n" +
-            "AND " +
-            "    t.created_at >= TO_TIMESTAMP(:startDate, 'YYYY-MM-DD HH24:MI:SS') AND t.created_at <= TO_TIMESTAMP(:endDate, 'YYYY-MM-DD HH24:MI:SS') \n" +
             "GROUP BY " +
             "    b.id, b.name, b.amount;", nativeQuery = true)
     ArrayList<Object[]> getBudgetGoals(@Param("startDate") String startDate, @Param("endDate") String endDate, @Param("userId") Long userId);

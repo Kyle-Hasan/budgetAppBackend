@@ -85,12 +85,12 @@ public class AccountController extends BaseController {
     }
 
     @GetMapping("/userAccounts")
-    public List<CurrentAccountDTO> getUserAccounts() {
+    public List<CurrentAccountDTO> getUserAccounts(@RequestParam String startDate, @RequestParam String endDate) {
         User user = getUser();
         if(user == null) {
             return  null;
         }
-        List<CurrentAccountDTO> currentAccountDTOS = accountService.getAccountsInfo(user.getId());
+        List<CurrentAccountDTO> currentAccountDTOS = accountService.getAccountsInfo(user.getId(),startDate,endDate);
         return currentAccountDTOS;
     }
 

@@ -84,11 +84,11 @@ public class UserController {
     }
 
     @GetMapping("/budgetScreen")
-    public HomeScreenInfoDTO getHomeScreenInfo() {
+    public HomeScreenInfoDTO getHomeScreenInfo(@RequestParam String startDate, @RequestParam String endDate) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Optional<User> user = userService.findByUsername(username);
-        return user.map(value -> userService.getBudgetScreen(value.getId())).orElse(null);
+        return user.map(value -> userService.getBudgetScreen(value.getId(),startDate,endDate)).orElse(null);
     }
 
     @PostMapping("/logout")

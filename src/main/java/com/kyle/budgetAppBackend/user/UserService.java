@@ -150,14 +150,20 @@ public class UserService extends BaseService<User> {
 
     }
 
+
+
     @PreAuthorize("this.checkAuthorizationById(#id)")
-    public HomeScreenInfoDTO getBudgetScreen(Long id) {
+    public HomeScreenInfoDTO getBudgetScreen(Long id,String dateStart,String dateEnd) {
         Optional<User> optionalUser = this.userRepository.findById(id);
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
-            var dates = getStartAndEndMonth();
-            var budgetGoalObjs = budgetRepository.getBudgetGoals(dates[0],dates[1],user.getId());
-            var currentAccountObjs = accountRepository.getCurrentAccounts(dates[0],dates[1],user.getId());
+
+            if(!this.isValidDate(dateStart) || !this.isValidDate(dateEnd)) {
+                return null;
+            }
+
+            var budgetGoalObjs = budgetRepository.getBudgetGoals(dateStart,dateEnd,user.getId());
+            var currentAccountObjs = accountRepository.getCurrentAccounts(dateStart,dateEnd,user.getId());
             List<BudgetGoalDTO> budgetGoalDTOs = budgetGoalObjs.stream().map(o -> new BudgetGoalDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
             List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
             Double budgetSpent = budgetGoalDTOs.stream().mapToDouble(b -> b.getCurrentSpent()).sum();

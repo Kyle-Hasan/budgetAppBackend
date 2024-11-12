@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface TransactionRepository extends BaseRepository<Transaction> {
-    @Query("SELECT t from Transaction t WHERE t.createdBy.id=:userId")
-    public List<Transaction> getUserTransactions(@Param("userId")Long userId);
+    @Query("SELECT t FROM Transaction t WHERE t.createdBy.id = :userId AND t.date >= TO_TIMESTAMP(:startDate, 'YYYY-MM-DD HH24:MI:SS') AND t.date <= TO_TIMESTAMP(:endDate, 'YYYY-MM-DD HH24:MI:SS')")
+    public List<Transaction> getUserTransactions(@Param("userId")Long userId,@Param("startDate") String startDate,@Param("endDate") String endDate);
 }

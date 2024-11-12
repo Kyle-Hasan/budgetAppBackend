@@ -79,11 +79,11 @@ public class AccountService extends BaseService<Account> {
         }
     }
 
-    public List<CurrentAccountDTO> getAccountsInfo(Long userId) {
-        String[] dateRanges = getDateStrings();
+    public List<CurrentAccountDTO> getAccountsInfo(Long userId,String startDate,String endDate) {
+        //String[] dateRanges = getDateStrings();
 
 
-        var currentAccountObjs = accountRepository.getCurrentAccounts(dateRanges[0],dateRanges[1],userId);
+        var currentAccountObjs = accountRepository.getCurrentAccounts(startDate,endDate,userId);
         List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
         return  currentAccountDTOs;
 

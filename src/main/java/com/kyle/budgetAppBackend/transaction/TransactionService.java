@@ -35,8 +35,8 @@ public class TransactionService extends BaseService<Transaction> {
 
     }
 
-    public List<TransactionForListDTO> getUserTransactions(Long userId) {
-        List<Transaction> transactions = transactionRepository.getUserTransactions(userId);
+    public List<TransactionForListDTO> getUserTransactions(Long userId, String startDate, String endDate) {
+        List<Transaction> transactions = transactionRepository.getUserTransactions(userId,startDate,endDate);
         return transactions.stream().map(TransactionService::convertTransactionToDto).toList();
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.lang.reflect.Field;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,6 +87,16 @@ public abstract class BaseService<T extends BaseEntity> {
             return false;
         }
         return (checkAuthorization(optionalT.get()));
+    }
+
+    public boolean isValidDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        try {
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
 
 

@@ -55,9 +55,9 @@ public class TransactionController extends BaseController {
     }
 
     @GetMapping("userTransactions")
-    public List<TransactionForListDTO> getTransactionDtoUsers() {
+    public List<TransactionForListDTO> getTransactionDtoUsers(@RequestParam String startDate, @RequestParam String endDate) {
         User user = getUser();
-        return transactionService.getUserTransactions(user.getId());
+        return transactionService.getUserTransactions(user.getId(),startDate,endDate);
     }
 
 
