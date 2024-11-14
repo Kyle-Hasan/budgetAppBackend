@@ -9,6 +9,7 @@ import com.kyle.budgetAppBackend.Token.Token;
 import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.budget.Budget;
+import com.kyle.budgetAppBackend.recurringTransaction.RecurringTransaction;
 import com.kyle.budgetAppBackend.role.Role;
 import jakarta.persistence.*;
 
@@ -36,6 +37,10 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "createdBy",cascade = CascadeType.ALL)
     @JsonManagedReference(value = "user")
     private List<Account> accounts = new ArrayList<Account>();
+
+    @OneToMany(mappedBy = "createdBy",cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "user")
+    private List<RecurringTransaction> recurringTransactions = new ArrayList<RecurringTransaction>();
 
 
     @OneToMany(mappedBy = "user")
@@ -115,4 +120,11 @@ public class User extends BaseEntity {
     }
 
 
+    public List<RecurringTransaction> getRecurringTransactions() {
+        return recurringTransactions;
+    }
+
+    public void setRecurringTransactions(List<RecurringTransaction> recurringTransactions) {
+        this.recurringTransactions = recurringTransactions;
+    }
 }

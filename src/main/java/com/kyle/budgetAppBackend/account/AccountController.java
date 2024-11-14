@@ -48,7 +48,7 @@ public class AccountController extends BaseController {
         return accountService.create(account);
     }
 
-    @PutMapping("")
+    @PatchMapping("")
     public Account saveAccount(@RequestBody Account account) {
         var accountOptional =  accountService.updateChangedOnly(account);
         if(accountOptional.isPresent()){

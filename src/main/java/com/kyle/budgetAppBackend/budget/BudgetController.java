@@ -4,10 +4,12 @@ import com.kyle.budgetAppBackend.budget.Budget;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
 import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.awt.*;
 import java.util.List;
@@ -46,7 +48,8 @@ public class BudgetController {
             return budgetOptional.get();
         }
         else {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recurring Transaction not found");
+
         }
     }
 
@@ -66,7 +69,7 @@ public class BudgetController {
         String username = authentication.getName();
         Optional<User> userOptional = this.userService.findByUsername(username);
         if (userOptional.isEmpty()) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         else {
             User user = userOptional.get();
