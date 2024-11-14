@@ -20,7 +20,7 @@ public class TransactionForListDTO {
 
     public TransactionForListDTO(Long id, double amount, String name, LocalDateTime date, ParentEntity account, ParentEntity budget,String type) {
         this.id = id;
-        this.amount = amount;
+        this.amount = Math.round(amount * 100.0) / 100.0;
         this.name = name;
         this.date = date;
         this.account = account;

@@ -89,6 +89,13 @@ public class AccountService extends BaseService<Account> {
 
     }
 
+    public AccountPageDTO getAccountsPageDTO(Long userId,String startDate,String endDate)  {
+        var currentAccountsDto = getAccountsInfo(userId,startDate,endDate);
+        Double total = currentAccountsDto.stream().mapToDouble(CurrentAccountDTO::getAmountDeposited).sum();
+        Double totalBalance = currentAccountsDto.stream().mapToDouble(CurrentAccountDTO::getCurrentAccountBalance).sum();
+        return new AccountPageDTO(currentAccountsDto,total,totalBalance);
+    }
+
     public static AccountDTO convertToDto(Account a) {
         List<TransactionForListDTO> transactionForListDTOS = BudgetService.convertTransactionsToDto(a.getTransactions(), a.getId(), a.getName());
         return new AccountDTO(a.getId(),a.getName(),a.getStartingBalance(), transactionForListDTOS);

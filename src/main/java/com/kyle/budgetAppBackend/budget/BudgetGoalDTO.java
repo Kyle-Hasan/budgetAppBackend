@@ -9,7 +9,7 @@ public class BudgetGoalDTO {
     public BudgetGoalDTO(Long budgetId, String budgetName, Double budgetAmount, Double totalSpent) {
         this.id = budgetId;
         this.name = budgetName;
-        this.total = budgetAmount;
+        this.total = Math.round(budgetAmount * 100.0) / 100.0;
         this.currentSpent = totalSpent;
     }
 

@@ -39,4 +39,15 @@ public class TransactionService extends BaseService<Transaction> {
         List<Transaction> transactions = transactionRepository.getUserTransactions(userId,startDate,endDate);
         return transactions.stream().map(TransactionService::convertTransactionToDto).toList();
     }
+
+    public TransactionPageResponse getTransactionPage(Long userId,String startDate, String endDate) {
+        List<TransactionForListDTO> transactionForListDTOS = getUserTransactions(userId,startDate,endDate);
+        Double totalSpent = transactionForListDTOS.stream()
+                .filter(x->  x.getType() != null && x.getType().
+                        equals(TransactionType.EXPENSE.toString())).mapToDouble(TransactionForListDTO::getAmount).sum();
+        Double totalDeposited = transactionForListDTOS.stream().filter(x-> x.getType() != null && x.getType().equals(TransactionType.INCOME.toString())).mapToDouble(TransactionForListDTO::getAmount).sum();
+
+        return new TransactionPageResponse(transactionForListDTOS,totalSpent,totalDeposited);
+
+    }
 }

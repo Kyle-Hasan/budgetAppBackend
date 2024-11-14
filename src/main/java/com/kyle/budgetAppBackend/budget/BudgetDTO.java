@@ -15,7 +15,7 @@ public class BudgetDTO {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.amount = amount;
+        this.amount = Math.round(amount * 100.0) / 100.0;
         this.transactions = transactions;
     }
 

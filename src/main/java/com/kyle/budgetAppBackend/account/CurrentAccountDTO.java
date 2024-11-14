@@ -9,8 +9,8 @@ public class CurrentAccountDTO {
     public CurrentAccountDTO(Long accountId, String accountName, Double currentAccountBalance, Double amountDeposited) {
         this.id = accountId;
         this.name = accountName;
-        this.currentAccountBalance = currentAccountBalance;
-        this.amountDeposited = amountDeposited;
+        this.currentAccountBalance = Math.round(currentAccountBalance * 100.0) / 100.0;
+        this.amountDeposited = Math.round(amountDeposited * 100.0) / 100.0;
     }
 
     public Long getId() {
