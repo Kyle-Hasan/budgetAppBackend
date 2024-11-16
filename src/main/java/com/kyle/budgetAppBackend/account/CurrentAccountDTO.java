@@ -6,11 +6,16 @@ public class CurrentAccountDTO {
     private Double currentAccountBalance;
     private Double amountDeposited;
 
-    public CurrentAccountDTO(Long accountId, String accountName, Double currentAccountBalance, Double amountDeposited) {
+
+
+    private String icon;
+
+    public CurrentAccountDTO(Long accountId, String accountName, Double currentAccountBalance, Double amountDeposited,String icon) {
         this.id = accountId;
         this.name = accountName;
         this.currentAccountBalance = Math.round(currentAccountBalance * 100.0) / 100.0;
         this.amountDeposited = Math.round(amountDeposited * 100.0) / 100.0;
+        this.icon = icon;
     }
 
     public Long getId() {
@@ -43,5 +48,12 @@ public class CurrentAccountDTO {
 
     public void setAmountDeposited(Double amountDeposited) {
         this.amountDeposited = amountDeposited;
+    }
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

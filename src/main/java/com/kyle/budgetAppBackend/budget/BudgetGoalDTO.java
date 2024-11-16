@@ -6,11 +6,16 @@ public class BudgetGoalDTO {
     private Double total;
     private Double currentSpent;
 
-    public BudgetGoalDTO(Long budgetId, String budgetName, Double budgetAmount, Double totalSpent) {
+
+
+    private String icon;
+
+    public BudgetGoalDTO(Long budgetId, String budgetName, Double budgetAmount, Double totalSpent,String icon) {
         this.id = budgetId;
         this.name = budgetName;
         this.total = Math.round(budgetAmount * 100.0) / 100.0;
         this.currentSpent = totalSpent;
+        this.icon = icon;
     }
 
     public Long getId() {
@@ -43,5 +48,13 @@ public class BudgetGoalDTO {
 
     public void setCurrentSpent(Double currentSpent) {
         this.currentSpent = currentSpent;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

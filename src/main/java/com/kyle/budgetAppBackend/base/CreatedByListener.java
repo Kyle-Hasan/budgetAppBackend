@@ -23,6 +23,9 @@ public class CreatedByListener {
 
     @PrePersist
     public void setCreatedBy(BaseEntity entity) {
+        if(entity.getCreatedBy() != null) {
+            return;
+        }
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 

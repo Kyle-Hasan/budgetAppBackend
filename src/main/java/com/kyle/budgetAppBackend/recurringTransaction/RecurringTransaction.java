@@ -9,6 +9,8 @@ import com.kyle.budgetAppBackend.transaction.TransactionType;
 import com.kyle.budgetAppBackend.user.User;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,36 +24,45 @@ public class RecurringTransaction extends BaseEntity {
     @Column(nullable = false)
     private double amount;
 
-
-
-
     @ManyToOne()
     @JoinColumn(name="budget_id")
     @JsonBackReference(value = "userTransactions")
     private Budget budget;
-
-
 
     @ManyToOne()
     @JoinColumn(name="account_id")
     @JsonBackReference(value = "userTransactionsAccount")
     private Account account;
     @Column(nullable = false)
+
     private FrequencyEnum frequency;
 
-
-
     @Column(nullable = false)
+
     private TransactionType transactionType;
 
-    public RecurringTransaction(FrequencyEnum frequency, Account account, Budget budget, double amount, String name,TransactionType transactionType) {
+    private LocalDate mostRecentDate;
+
+    private String icon;
+
+    public RecurringTransaction(FrequencyEnum frequency, Account account, Budget budget, double amount, String name,TransactionType transactionType, String icon) {
         this.frequency = frequency;
         this.account = account;
         this.budget = budget;
         this.amount = amount;
         this.name = name;
         this.transactionType = transactionType;
+        this.icon = icon;
     }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
 
     public RecurringTransaction() {
 
@@ -103,5 +114,13 @@ public class RecurringTransaction extends BaseEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public LocalDate getMostRecentDate() {
+        return mostRecentDate;
+    }
+
+    public void setMostRecentDate(LocalDate mostRecentDate) {
+        this.mostRecentDate = mostRecentDate;
     }
 }

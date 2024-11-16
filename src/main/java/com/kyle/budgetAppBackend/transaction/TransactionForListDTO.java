@@ -1,5 +1,6 @@
 package com.kyle.budgetAppBackend.transaction;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -7,7 +8,7 @@ public class TransactionForListDTO {
     private Long id;
     private double amount;
     private String name;
-    private LocalDateTime date;
+    private LocalDate date;
 
 
 
@@ -18,7 +19,7 @@ public class TransactionForListDTO {
 
 
 
-    public TransactionForListDTO(Long id, double amount, String name, LocalDateTime date, ParentEntity account, ParentEntity budget,String type) {
+    public TransactionForListDTO(Long id, double amount, String name, LocalDate date, ParentEntity account, ParentEntity budget, String type) {
         this.id = id;
         this.amount = Math.round(amount * 100.0) / 100.0;
         this.name = name;
@@ -60,11 +61,11 @@ public class TransactionForListDTO {
     public void setName(String name) {
         this.name = name;
     }
-    public LocalDateTime getDate() {
+    public LocalDate getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(LocalDate date) {
         this.date = date;
     }
 

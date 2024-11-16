@@ -3,11 +3,14 @@ package com.kyle.budgetAppBackend.recurringTransaction;
 import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.base.BaseController;
 import com.kyle.budgetAppBackend.user.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 import java.util.List;
 import com.kyle.budgetAppBackend.user.User;
+import org.springframework.web.server.ResponseStatusException;
+
 @RestController
 @RequestMapping("/api/recurring")
 public class RecurringController extends BaseController {
@@ -34,19 +37,24 @@ public class RecurringController extends BaseController {
     }
 
     @GetMapping("/{id}")
-    public RecurringTransaction getRecurring(@PathVariable Long id) {
+    public RecurringTransactionDTO getRecurring(@PathVariable Long id) {
         var optional = recurringService.get(id);
-        return optional.orElse(null);
+        if(optional.isPresent()) {
+            return RecurringService.convertToDTO(optional.get());
+        }
+        else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity not found");
+        }
     }
 
     @GetMapping("")
-    public List<RecurringTransaction> getAllForUser(){
+    public List<RecurringTransactionDTO> getAllForUser(){
         User user = getUser();
         if(user == null) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         else {
-            return recurringService.getRecurringTransactionsForUser(user.getId());
+            return recurringService.getRecurringTransactionsForUser(user.getId()).stream().map(RecurringService::convertToDTO).toList();
         }
     }
 }

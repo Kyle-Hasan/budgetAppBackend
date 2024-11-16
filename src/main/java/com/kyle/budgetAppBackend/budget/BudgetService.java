@@ -73,7 +73,7 @@ public class BudgetService extends BaseService<Budget> {
 
     public static BudgetDTO convertBudgetToDto(Budget budget) {
         List<TransactionForListDTO> transactionForListDTOS = convertTransactionsToDto(budget.getTransactions(), budget.getId(), budget.getName());
-        return new BudgetDTO(budget.getId(), budget.getName(), budget.getDescription(), budget.getAmount(), transactionForListDTOS);
+        return new BudgetDTO(budget.getId(), budget.getName(), budget.getDescription(), budget.getAmount(), transactionForListDTOS,budget.getIcon());
     }
 
     public static Budget convertDtoToBudget(BudgetDTO dto) {

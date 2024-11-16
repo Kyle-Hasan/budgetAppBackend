@@ -29,6 +29,7 @@ public class AccountService extends BaseService<Account> {
     public AccountService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
         super(accountRepository);
         this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
     }
 
 
@@ -70,7 +71,7 @@ public class AccountService extends BaseService<Account> {
         String[] dateRanges = getDateStrings();
         var currentAccountObjs = accountRepository.getAccountUser(userId,accountId,dateRanges[0],dateRanges[1]);
 
-        List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
+        List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4],(String)o[2])).toList();
         if(currentAccountDTOs.isEmpty()) {
             return null;
         }
@@ -84,7 +85,7 @@ public class AccountService extends BaseService<Account> {
 
 
         var currentAccountObjs = accountRepository.getCurrentAccounts(startDate,endDate,userId);
-        List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
+        List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4],(String)o[2])).toList();
         return  currentAccountDTOs;
 
     }
@@ -98,7 +99,7 @@ public class AccountService extends BaseService<Account> {
 
     public static AccountDTO convertToDto(Account a) {
         List<TransactionForListDTO> transactionForListDTOS = BudgetService.convertTransactionsToDto(a.getTransactions(), a.getId(), a.getName());
-        return new AccountDTO(a.getId(),a.getName(),a.getStartingBalance(), transactionForListDTOS);
+        return new AccountDTO(a.getId(),a.getName(),a.getStartingBalance(), transactionForListDTOS,a.getIcon());
     }
 
 

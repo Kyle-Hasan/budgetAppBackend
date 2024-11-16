@@ -10,15 +10,20 @@ public class AccountDTO {
 
 
 
+    private String icon;
+
+
+
     private double startingBalance;
     List<TransactionForListDTO> transactions;
 
-    public AccountDTO(Long id, String name,  double startingBalance, List<TransactionForListDTO> transactions) {
+    public AccountDTO(Long id, String name,  double startingBalance, List<TransactionForListDTO> transactions, String icon) {
         this.id = id;
         this.name = name;
 
         this.startingBalance = startingBalance;
         this.transactions = transactions;
+        this.icon = icon;
     }
 
     public double getStartingBalance() {
@@ -53,5 +58,13 @@ public class AccountDTO {
 
     public void setTransactions(List<TransactionForListDTO> transactions) {
         this.transactions = transactions;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

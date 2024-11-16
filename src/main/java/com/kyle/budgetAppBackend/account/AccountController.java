@@ -8,9 +8,11 @@ import com.kyle.budgetAppBackend.transaction.TransactionRepository;
 import com.kyle.budgetAppBackend.transaction.TransactionService;
 import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +33,7 @@ public class AccountController extends BaseController {
         var user = getUser();
 
         if(user == null) {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
         Optional<Account> optional = accountService.get(id);
@@ -39,7 +41,7 @@ public class AccountController extends BaseController {
             return AccountService.convertToDto(optional.get());
         }
         else {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found");
         }
     }
 

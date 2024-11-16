@@ -14,8 +14,11 @@ public interface BudgetRepository extends BaseRepository<Budget> {
     @Query(value = "SELECT " +
             "    b.id AS budgetId, " +
             "    b.name AS budgetName, " +
+            "    b.icon AS icon, " +
             "    b.amount AS budgetAmount, " +
-            "    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount WHEN t.type = 'INCOME' THEN 0 ELSE 0 END), 0) AS totalSpent \n" +
+
+            "    COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount WHEN t.type = 'INCOME' THEN 0 ELSE 0 END), 0) AS totalSpent " +
+
             "FROM " +
             "    budgets AS b \n" +
             "LEFT JOIN " +

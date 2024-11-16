@@ -26,6 +26,10 @@ public class Budget extends BaseEntity {
     @JsonManagedReference(value = "userTransactions")
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
+
+
+    private String icon;
+
     public String getName() {
         return name;
     }
@@ -67,6 +71,14 @@ public class Budget extends BaseEntity {
         this.transactions.add(transaction);
 
         transaction.setBudget(this);
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
 

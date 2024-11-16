@@ -21,6 +21,10 @@ public class Account extends BaseEntity {
 
 
 
+    private String icon;
+
+
+
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
     @JsonManagedReference(value = "userTransactionsAccount")
     private List<Transaction> transactions = new ArrayList<Transaction>();
@@ -47,6 +51,14 @@ public class Account extends BaseEntity {
 
     public void setStartingBalance(Double startingBalance) {
         this.startingBalance = startingBalance;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 
 

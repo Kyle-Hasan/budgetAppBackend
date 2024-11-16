@@ -3,7 +3,10 @@ package com.kyle.budgetAppBackend.transaction;
 import com.kyle.budgetAppBackend.base.BaseController;
 import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 
@@ -20,13 +23,13 @@ public class TransactionController extends BaseController {
 
 
     @GetMapping("/{id}")
-    public Transaction getTransaction(@PathVariable Long id) {
+    public TransactionForListDTO getTransaction(@PathVariable Long id) {
         var transactionOptional =  transactionService.get(id);
         if(transactionOptional.isPresent()){
-            return transactionOptional.get();
+            return TransactionService.convertTransactionToDto(transactionOptional.get());
         }
         else {
-            return null;
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
     }
 

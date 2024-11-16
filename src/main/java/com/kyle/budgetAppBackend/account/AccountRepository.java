@@ -13,6 +13,7 @@ public interface AccountRepository extends BaseRepository<Account> {
     @Query(value = "SELECT " +
             "    a.id AS accountId, " +
             "    a.name AS accountName, " +
+            "    a.icon as icon, " +
             "    a.starting_balance + COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN -t.amount WHEN t.type = 'INCOME' THEN t.amount ELSE 0 END), 0) AS currentAccountBalance, " +
             "    COALESCE(SUM(CASE WHEN t.type = 'INCOME' AND t.date >= TO_TIMESTAMP(:startDate, 'YYYY-MM-DD HH24:MI:SS') " +
             "                        AND t.date <= TO_TIMESTAMP(:endDate, 'YYYY-MM-DD HH24:MI:SS') THEN t.amount ELSE 0 END), 0) AS amountDeposited " +
@@ -41,6 +42,7 @@ public interface AccountRepository extends BaseRepository<Account> {
     @Query(value = "SELECT " +
             "    a.id AS accountId, " +
             "    a.name AS accountName, " +
+            "    a.icon as icon, " +
             "    a.starting_balance + COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN -t.amount WHEN t.type = 'INCOME' THEN t.amount ELSE 0 END), 0) AS currentAccountBalance, " +
             "    COALESCE(SUM(t.amount), 0) AS amountDeposited\n" +
             "FROM \n" +

@@ -164,8 +164,8 @@ public class UserService extends BaseService<User> {
 
             var budgetGoalObjs = budgetRepository.getBudgetGoals(dateStart,dateEnd,user.getId());
             var currentAccountObjs = accountRepository.getCurrentAccounts(dateStart,dateEnd,user.getId());
-            List<BudgetGoalDTO> budgetGoalDTOs = budgetGoalObjs.stream().map(o -> new BudgetGoalDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
-            List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[2], (Double) o[3])).toList();
+            List<BudgetGoalDTO> budgetGoalDTOs = budgetGoalObjs.stream().map(o -> new BudgetGoalDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4],(String)o[2])).toList();
+            List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4],(String)o[2])).toList();
             Double budgetSpent = budgetGoalDTOs.stream().mapToDouble(b -> b.getCurrentSpent()).sum();
             Double accountsTotal = currentAccountDTOs.stream().mapToDouble(a -> a.getCurrentAccountBalance()).sum();
             HomeScreenInfoDTO h = new HomeScreenInfoDTO(currentAccountDTOs,budgetGoalDTOs,budgetSpent,accountsTotal);

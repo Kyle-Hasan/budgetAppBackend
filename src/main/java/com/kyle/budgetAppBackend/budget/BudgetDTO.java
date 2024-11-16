@@ -10,13 +10,15 @@ public class BudgetDTO {
     private String description;
     private double amount;
     List<TransactionForListDTO> transactions;
+    private String icon;
 
-    public BudgetDTO(Long id, String name, String description, double amount, List<TransactionForListDTO> transactions) {
+    public BudgetDTO(Long id, String name, String description, double amount, List<TransactionForListDTO> transactions,String icon) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.amount = Math.round(amount * 100.0) / 100.0;
         this.transactions = transactions;
+        this.icon = icon;
     }
 
     public Long getId() {
@@ -57,5 +59,13 @@ public class BudgetDTO {
 
     public void setTransactions(List<TransactionForListDTO> transactions) {
         this.transactions = transactions;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }
