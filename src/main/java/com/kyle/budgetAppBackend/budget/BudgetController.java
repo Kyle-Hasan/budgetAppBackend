@@ -1,7 +1,9 @@
 package com.kyle.budgetAppBackend.budget;
 
+import com.kyle.budgetAppBackend.base.VirtualScrollRequest;
 import com.kyle.budgetAppBackend.budget.Budget;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
+import com.kyle.budgetAppBackend.user.HomeScreenInfoDTO;
 import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserService;
 import org.springframework.http.HttpStatus;
@@ -58,10 +60,7 @@ public class BudgetController {
         budgetService.delete(id);
     }
 
-    @GetMapping("")
-    public List<Budget> getBudgets() {
-        return budgetService.getAll();
-    }
+
 
     @GetMapping("/budgetSelections")
     public List<ParentEntity> getBudgetSelections() {
@@ -74,6 +73,25 @@ public class BudgetController {
         else {
             User user = userOptional.get();
             return budgetService.budgetSelectionsUser(user.getId());
+        }
+
+    }
+
+    @GetMapping("/searchByName")
+    public HomeScreenInfoDTO getSearchByTime(@RequestParam String name, @RequestParam String startDate,
+                                             @RequestParam String endDate, @ModelAttribute VirtualScrollRequest virtualScrollRequest) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<User> userOptional = this.userService.findByUsername(username);
+        if (userOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        else {
+            User user = userOptional.get();
+            var retVal= budgetService.getByName(user.getId(),startDate,endDate,virtualScrollRequest.getSort(),
+                    virtualScrollRequest.getOrder(),virtualScrollRequest.getSize(),virtualScrollRequest.getPageNumber(),name);
+            return retVal;
         }
 
     }

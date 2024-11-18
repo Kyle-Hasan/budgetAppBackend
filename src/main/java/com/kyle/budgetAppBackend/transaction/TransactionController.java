@@ -1,13 +1,18 @@
 package com.kyle.budgetAppBackend.transaction;
 
 import com.kyle.budgetAppBackend.base.BaseController;
+import com.kyle.budgetAppBackend.base.VirtualScrollRequest;
+import com.kyle.budgetAppBackend.user.HomeScreenInfoDTO;
 import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -58,13 +63,32 @@ public class TransactionController extends BaseController {
     }
 
     @GetMapping("userTransactions")
-    public TransactionPageResponse getTransactionDtoUsers(@RequestParam String startDate, @RequestParam String endDate) {
+    public TransactionPageResponse getTransactionDtoUsers(@RequestParam String startDate, @RequestParam String endDate,@ModelAttribute VirtualScrollTransactions virtualScrollRequest) {
         User user = getUser();
         if(user != null) {
-            return transactionService.getTransactionPage(user.getId(), startDate, endDate);
+            return transactionService.getTransactionPage(user.getId(), startDate, endDate,virtualScrollRequest);
         }
         else {
             return null;
+        }
+
+    }
+
+    @GetMapping("/searchByName")
+    public TransactionPageResponse getSearchByTime(@RequestParam String name, @RequestParam String startDate,
+                                             @RequestParam String endDate, @ModelAttribute VirtualScrollTransactions virtualScrollRequest) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        Optional<User> userOptional = this.userService.findByUsername(username);
+        if (userOptional.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        else {
+            User user = userOptional.get();
+            var retVal= transactionService.getByName(user.getId(),startDate,endDate,virtualScrollRequest.getSort(),
+                    virtualScrollRequest.getOrder(),virtualScrollRequest.getSize(),virtualScrollRequest.getPageNumber(),name, virtualScrollRequest.getFilter());
+            return retVal;
         }
 
     }

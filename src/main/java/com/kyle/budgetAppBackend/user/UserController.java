@@ -1,6 +1,7 @@
 package com.kyle.budgetAppBackend.user;
 
 import com.kyle.budgetAppBackend.Token.TokenService;
+import com.kyle.budgetAppBackend.base.VirtualScrollRequest;
 import com.kyle.budgetAppBackend.role.Role;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -84,11 +85,11 @@ public class UserController {
     }
 
     @GetMapping("/budgetScreen")
-    public HomeScreenInfoDTO getHomeScreenInfo(@RequestParam String startDate, @RequestParam String endDate) {
+    public HomeScreenInfoDTO getHomeScreenInfo(@RequestParam String startDate, @RequestParam String endDate, @ModelAttribute VirtualScrollRequest virtualScrollRequest) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Optional<User> user = userService.findByUsername(username);
-        return user.map(value -> userService.getBudgetScreen(value.getId(),startDate,endDate)).orElse(null);
+        return user.map(value -> userService.getBudgetScreen(value.getId(),startDate,endDate,virtualScrollRequest)).orElse(null);
     }
 
     @PostMapping("/logout")

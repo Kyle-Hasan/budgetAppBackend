@@ -3,8 +3,10 @@ package com.kyle.budgetAppBackend.user;
 import com.kyle.budgetAppBackend.account.AccountRepository;
 import com.kyle.budgetAppBackend.account.CurrentAccountDTO;
 import com.kyle.budgetAppBackend.base.BaseService;
+import com.kyle.budgetAppBackend.base.VirtualScrollRequest;
 import com.kyle.budgetAppBackend.budget.BudgetGoalDTO;
 import com.kyle.budgetAppBackend.budget.BudgetRepository;
+import com.kyle.budgetAppBackend.budget.BudgetService;
 import com.kyle.budgetAppBackend.role.Role;
 import com.kyle.budgetAppBackend.role.RoleRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,18 +27,18 @@ public class UserService extends BaseService<User> {
 
     private RoleRepository roleRepository;
 
-    private BudgetRepository budgetRepository;
+    private BudgetService budgetService;
 
     private AccountRepository accountRepository;
 
     private PasswordEncoder passwordEncoder;
 
 
-    public UserService(UserRepository baseRepository, RoleRepository roleRepository, BudgetRepository budgetRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository baseRepository, RoleRepository roleRepository, BudgetService budgetService, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
         super(baseRepository);
         this.userRepository = baseRepository;
         this.roleRepository = roleRepository;
-        this.budgetRepository = budgetRepository;
+        this.budgetService = budgetService;
         this.accountRepository = accountRepository;
         this.passwordEncoder = passwordEncoder;
 
@@ -72,7 +74,7 @@ public class UserService extends BaseService<User> {
                     })
                     .collect(Collectors.toList());
 
-            var budgets = budgetRepository.findAllById(budgetsId);
+            var budgets = budgetService.findAllById(budgetsId);
             existingUserObj.setBudgets(budgets);
         }
 
@@ -153,7 +155,7 @@ public class UserService extends BaseService<User> {
 
 
     @PreAuthorize("this.checkAuthorizationById(#id)")
-    public HomeScreenInfoDTO getBudgetScreen(Long id,String dateStart,String dateEnd) {
+    public HomeScreenInfoDTO getBudgetScreen(Long id, String dateStart, String dateEnd, VirtualScrollRequest virtualScrollRequest) {
         Optional<User> optionalUser = this.userRepository.findById(id);
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
@@ -162,13 +164,13 @@ public class UserService extends BaseService<User> {
                 return null;
             }
 
-            var budgetGoalObjs = budgetRepository.getBudgetGoals(dateStart,dateEnd,user.getId());
-            var currentAccountObjs = accountRepository.getCurrentAccounts(dateStart,dateEnd,user.getId());
+
+            var budgetGoalObjs = budgetService.findBudgetsWithDynamicQuery(user.getId(),dateStart,dateEnd,virtualScrollRequest.getSort(),
+                    virtualScrollRequest.getOrder(),virtualScrollRequest.getSize(), virtualScrollRequest.getPageNumber(),null);
             List<BudgetGoalDTO> budgetGoalDTOs = budgetGoalObjs.stream().map(o -> new BudgetGoalDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4],(String)o[2])).toList();
-            List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4],(String)o[2])).toList();
-            Double budgetSpent = budgetGoalDTOs.stream().mapToDouble(b -> b.getCurrentSpent()).sum();
-            Double accountsTotal = currentAccountDTOs.stream().mapToDouble(a -> a.getCurrentAccountBalance()).sum();
-            HomeScreenInfoDTO h = new HomeScreenInfoDTO(currentAccountDTOs,budgetGoalDTOs,budgetSpent,accountsTotal);
+            double budgetSpent = budgetService.getBudgetTotalSpent(user.getId(), dateStart,dateEnd);
+
+            HomeScreenInfoDTO h = new HomeScreenInfoDTO(null,budgetGoalDTOs,budgetSpent,null);
 
             return h;
         }
