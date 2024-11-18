@@ -122,8 +122,14 @@ public class TransactionService extends BaseService<Transaction> {
 
     public TransactionPageResponse getTransactionPage(Long userId,String startDate, String endDate,VirtualScrollTransactions virtualScrollRequest) {
         List<TransactionForListDTO> transactionForListDTOS = getUserTransactions(userId,startDate,endDate,virtualScrollRequest);
-        return createResponse(transactionForListDTOS,startDate,endDate,userId);
-
+        var retVal = createResponse(transactionForListDTOS,startDate,endDate,userId);
+        if(virtualScrollRequest.getFilter() == TransactionType.INCOME) {
+            retVal.setTotalSpent((double) 0);
+        }
+        else if(virtualScrollRequest.getFilter() == TransactionType.EXPENSE) {
+            retVal.setTotalDeposited((double)0);
+        }
+        return retVal;
     }
 
     public TransactionPageResponse createResponse(List<TransactionForListDTO> transactionForListDTOS,String startDate,String endDate,long userId) {
