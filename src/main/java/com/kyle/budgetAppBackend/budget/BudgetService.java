@@ -52,17 +52,7 @@ public class BudgetService extends BaseService<Budget> {
 
         // check if any new transactions exist
         List<Transaction> uncreated = budget.getTransactions().stream().filter(t -> t.getId() == -1).toList();
-
-
-
         Budget retVal = super.create(budget);
-
-        List<Transaction> created = transactionRepository.saveAll(uncreated.stream().map(t -> {
-            t.setBudget(retVal);
-            return t;
-        }).toList());
-
-        retVal.setTransactions(created);
 
         return retVal;
     }
