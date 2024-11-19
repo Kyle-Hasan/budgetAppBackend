@@ -86,58 +86,53 @@ public class BudgetService extends BaseService<Budget> {
             int pageNumber,
             String searchName) {
 
-        String queryStr = "SELECT b.id AS budgetId, " +
-                "b.name AS budgetName, " +
-                "b.icon AS icon, " +
-                "b.amount AS budgetAmount, " +
-                "COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount " +
-                "WHEN t.type = 'INCOME' THEN 0 ELSE 0 END), 0) AS totalSpent " +
-                "FROM budgets AS b " +
-                "LEFT JOIN transactions AS t ON (b.id = t.budget_id " +
-                "AND t.date >= TO_TIMESTAMP(:startDate, 'YYYY-MM-DD HH24:MI:SS') " +
-                "AND t.date <= TO_TIMESTAMP(:endDate, 'YYYY-MM-DD HH24:MI:SS')) " +
-                "WHERE b.user_id = :userId ";
+        StringBuilder queryBuilder = new StringBuilder("SELECT b.id AS budgetId, ")
+                .append("b.name AS budgetName, ")
+                .append("b.icon AS icon, ")
+                .append("b.amount AS budgetAmount, ")
+                .append("COALESCE(SUM(CASE WHEN t.type = 'EXPENSE' THEN t.amount ")
+                .append("WHEN t.type = 'INCOME' THEN 0 ELSE 0 END), 0) AS totalSpent ")
+                .append("FROM budgets AS b ")
+                .append("LEFT JOIN transactions AS t ON (b.id = t.budget_id ")
+                .append("AND t.date >= TO_TIMESTAMP(:startDate, 'YYYY-MM-DD HH24:MI:SS') ")
+                .append("AND t.date <= TO_TIMESTAMP(:endDate, 'YYYY-MM-DD HH24:MI:SS')) ")
+                .append("WHERE b.user_id = :userId ");
 
-        // Add search by name conditionally
         if (searchName != null && !searchName.trim().isEmpty()) {
-            queryStr += "AND LOWER(b.name) LIKE LOWER(:searchName) ";
+            queryBuilder.append("AND LOWER(b.name) LIKE LOWER(:searchName) ");
         }
 
-        queryStr += "GROUP BY b.id, b.name, b.amount, b.icon ";
+        queryBuilder.append("GROUP BY b.id, b.name, b.amount, b.icon ");
 
-        // Add sorting if specified
         if (sortField != null && sortOrder != null) {
             String sortFieldResolved = "";
-            if (sortField.equals("name")) {
+            if ("name".equals(sortField)) {
                 sortFieldResolved = "b." + sortField;
-            }
-            else  if(sortField.equals("totalAmount")) {
+            } else if ("totalAmount".equals(sortField)) {
                 sortFieldResolved = "b.amount";
-            }
-            else if(sortField.equals("amountSpent")) {
+            } else if ("amountSpent".equals(sortField)) {
                 sortFieldResolved = "totalSpent";
             }
-            queryStr += "ORDER BY " + sortFieldResolved + " " + sortOrder + " ";
+            queryBuilder.append("ORDER BY ").append(sortFieldResolved).append(" ").append(sortOrder).append(", b.id ");
         }
 
         int offset = pageNumber * size;
-        queryStr += "LIMIT :size OFFSET :offset";
+        queryBuilder.append("LIMIT :size OFFSET :offset");
 
-        Query query = entityManager.createNativeQuery(queryStr);
+        Query query = entityManager.createNativeQuery(queryBuilder.toString());
         query.setParameter("userId", userId);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
         query.setParameter("size", size);
         query.setParameter("offset", offset);
 
-
         if (searchName != null && !searchName.trim().isEmpty()) {
             query.setParameter("searchName", "%" + searchName.trim() + "%");
         }
 
-
         return query.getResultList();
     }
+
 
     public double getBudgetTotalSpent(Long userId,
                                       String startDate,

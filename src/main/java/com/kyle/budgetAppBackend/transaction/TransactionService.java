@@ -90,7 +90,7 @@ public class TransactionService extends BaseService<Transaction> {
                     sortFieldResolved = "t.type";
                     break;
             }
-            queryStr.append("ORDER BY ").append(sortFieldResolved).append(" ").append(sortOrder).append(" ");
+            queryStr.append("ORDER BY ").append(sortFieldResolved).append(" ").append(sortOrder).append(", t.id ");
         }
 
         int offset = pageNumber * size;
