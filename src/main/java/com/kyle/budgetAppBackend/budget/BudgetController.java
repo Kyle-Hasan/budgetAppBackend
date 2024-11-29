@@ -1,5 +1,6 @@
 package com.kyle.budgetAppBackend.budget;
 
+import com.kyle.budgetAppBackend.base.BaseController;
 import com.kyle.budgetAppBackend.base.VirtualScrollRequest;
 import com.kyle.budgetAppBackend.budget.Budget;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
@@ -19,12 +20,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/budgets")
-public class BudgetController {
+public class BudgetController extends BaseController {
     private BudgetService budgetService;
-    private UserService userService;
+
     public BudgetController(BudgetService budgetService,UserService userService) {
+        super(userService);
         this.budgetService = budgetService;
-        this.userService = userService;
+
     }
 
     @GetMapping("/{id}")
@@ -43,7 +45,7 @@ public class BudgetController {
         return BudgetService.convertBudgetToDto(budgetService.create(budget));
     }
 
-    @PatchMapping("")
+    @PutMapping("")
     public Budget saveBudget(@RequestBody Budget budget) {
         var budgetOptional =  budgetService.updateChangedOnly(budget);
         if(budgetOptional.isPresent()){
@@ -64,15 +66,14 @@ public class BudgetController {
 
     @GetMapping("/budgetSelections")
     public List<ParentEntity> getBudgetSelections() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Optional<User> userOptional = this.userService.findByUsername(username);
-        if (userOptional.isEmpty()) {
+
+        Long userId = getUserId();
+        if (userId == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         else {
-            User user = userOptional.get();
-            return budgetService.budgetSelectionsUser(user.getId());
+
+            return budgetService.budgetSelectionsUser(userId);
         }
 
     }
@@ -80,16 +81,15 @@ public class BudgetController {
     @GetMapping("/searchByName")
     public HomeScreenInfoDTO getSearchByTime(@RequestParam String name, @RequestParam String startDate,
                                              @RequestParam String endDate, @ModelAttribute VirtualScrollRequest virtualScrollRequest) {
+        Long userId = getUserId();
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Optional<User> userOptional = this.userService.findByUsername(username);
-        if (userOptional.isEmpty()) {
+
+        if (userId == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         else {
-            User user = userOptional.get();
-            var retVal= budgetService.getByName(user.getId(),startDate,endDate,virtualScrollRequest.getSort(),
+
+            var retVal= budgetService.getByName(userId,startDate,endDate,virtualScrollRequest.getSort(),
                     virtualScrollRequest.getOrder(),virtualScrollRequest.getSize(),virtualScrollRequest.getPageNumber(),name);
             return retVal;
         }

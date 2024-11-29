@@ -1,5 +1,6 @@
 package com.kyle.budgetAppBackend.base;
 
+import com.kyle.budgetAppBackend.security.CustomUserDetails;
 import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserService;
 import org.springframework.security.core.Authentication;
@@ -12,7 +13,7 @@ public abstract class BaseController<T extends BaseEntity> {
     public BaseController(UserService userService) {
         this.userService = userService;
     }
-    public User getUser() {
+ /*   public User getUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         Optional<User> userOptional = this.userService.findByUsername(username);
@@ -23,6 +24,15 @@ public abstract class BaseController<T extends BaseEntity> {
             User user = userOptional.get();
             return user;
         }
+    }*/
+
+    public Long getUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails details = (CustomUserDetails) authentication.getPrincipal();
+        if(details == null) {
+            return null;
+        }
+        return details.getUserId();
     }
 
 

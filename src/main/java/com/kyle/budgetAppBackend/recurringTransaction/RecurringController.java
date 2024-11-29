@@ -31,7 +31,7 @@ public class RecurringController extends BaseController {
         return recurringService.create(r);
     }
 
-    @PatchMapping("")
+    @PutMapping("")
     public RecurringTransaction updateRecurring(@RequestBody RecurringTransaction r) {
         return recurringService.update(r);
     }
@@ -49,12 +49,12 @@ public class RecurringController extends BaseController {
 
     @GetMapping("")
     public List<RecurringTransactionDTO> getAllForUser(){
-        User user = getUser();
-        if(user == null) {
+        Long userId = getUserId();
+        if(userId == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         else {
-            return recurringService.getRecurringTransactionsForUser(user.getId()).stream().map(RecurringService::convertToDTO).toList();
+            return recurringService.getRecurringTransactionsForUser(userId).stream().map(RecurringService::convertToDTO).toList();
         }
     }
 }

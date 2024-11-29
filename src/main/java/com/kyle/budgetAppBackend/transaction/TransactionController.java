@@ -43,7 +43,7 @@ public class TransactionController extends BaseController {
         return TransactionService.convertTransactionToDto(transactionService.create(transaction));
     }
 
-    @PatchMapping("")
+    @PutMapping("")
     public TransactionForListDTO saveTransaction(@RequestBody Transaction transaction) {
         var oldTransaction = transactionService.get(transaction.getId());
 
@@ -64,9 +64,9 @@ public class TransactionController extends BaseController {
 
     @GetMapping("userTransactions")
     public TransactionPageResponse getTransactionDtoUsers(@RequestParam String startDate, @RequestParam String endDate,@ModelAttribute VirtualScrollTransactions virtualScrollRequest) {
-        User user = getUser();
-        if(user != null) {
-            return transactionService.getTransactionPage(user.getId(), startDate, endDate,virtualScrollRequest);
+        Long userId= getUserId();
+        if(userId != null) {
+            return transactionService.getTransactionPage(userId, startDate, endDate,virtualScrollRequest);
         }
         else {
             return null;
@@ -78,15 +78,13 @@ public class TransactionController extends BaseController {
     public TransactionPageResponse getSearchByTime(@RequestParam String name, @RequestParam String startDate,
                                              @RequestParam String endDate, @ModelAttribute VirtualScrollTransactions virtualScrollRequest) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        Optional<User> userOptional = this.userService.findByUsername(username);
-        if (userOptional.isEmpty()) {
+        Long userId = getUserId();
+        if (userId == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
         else {
-            User user = userOptional.get();
-            var retVal= transactionService.getByName(user.getId(),startDate,endDate,virtualScrollRequest.getSort(),
+
+            var retVal= transactionService.getByName(userId,startDate,endDate,virtualScrollRequest.getSort(),
                     virtualScrollRequest.getOrder(),virtualScrollRequest.getSize(),virtualScrollRequest.getPageNumber(),name, virtualScrollRequest.getFilter());
             return retVal;
         }

@@ -34,19 +34,22 @@ public abstract class BaseService<T extends BaseEntity> {
     @PreAuthorize("this.checkAuthorization(#oldT)")
     public T updateChangedOnly(T t, T oldT) {
         Field[] fields = oldT.getClass().getDeclaredFields();
+        t.setCreatedBy(oldT.getCreatedBy());
+        t.setCreatedAt(oldT.getCreatedAt());
         for (Field field : fields) {
             field.setAccessible(true);
             try {
                 Object value = field.get(t);
-                if (value != null) {
-                    field.set(oldT, value);
-                }
+
+                field.set(oldT, value);
+
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
 
 
         }
+
 
         return this.baseRepository.save(oldT);
     }

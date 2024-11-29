@@ -30,9 +30,9 @@ public class AccountController extends BaseController {
     @GetMapping("/{id}")
     public AccountDTO getAccount(@PathVariable Long id) {
 
-        var user = getUser();
+        Long userId = getUserId();
 
-        if(user == null) {
+        if(userId == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
@@ -50,7 +50,7 @@ public class AccountController extends BaseController {
         return accountService.create(account);
     }
 
-    @PatchMapping("")
+    @PutMapping("")
     public Account saveAccount(@RequestBody Account account) {
         var accountOptional =  accountService.updateChangedOnly(account);
         if(accountOptional.isPresent()){
@@ -88,11 +88,11 @@ public class AccountController extends BaseController {
 
     @GetMapping("/userAccounts")
     public AccountPageDTO getUserAccounts(@RequestParam String startDate, @RequestParam String endDate) {
-        User user = getUser();
-        if(user == null) {
+        Long userId = getUserId();
+        if(userId == null) {
             return  null;
         }
-        return accountService.getAccountsPageDTO(user.getId(),startDate,endDate);
+        return accountService.getAccountsPageDTO(userId,startDate,endDate);
 
     }
 
