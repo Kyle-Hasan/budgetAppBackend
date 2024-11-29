@@ -32,7 +32,7 @@ public abstract class BaseService<T extends BaseEntity> {
     }
 
     @PreAuthorize("this.checkAuthorization(#oldT)")
-    public T updateChangedOnly(T t, T oldT) {
+    public T updateFields(T t, T oldT) {
         Field[] fields = oldT.getClass().getDeclaredFields();
         t.setCreatedBy(oldT.getCreatedBy());
         t.setCreatedAt(oldT.getCreatedAt());

@@ -1,18 +1,13 @@
 package com.kyle.budgetAppBackend.budget;
 
-import com.kyle.budgetAppBackend.base.BaseRepository;
 import com.kyle.budgetAppBackend.base.BaseService;
 import com.kyle.budgetAppBackend.transaction.*;
 import com.kyle.budgetAppBackend.user.HomeScreenInfoDTO;
-import com.kyle.budgetAppBackend.user.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.dsig.TransformService;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,7 +37,7 @@ public class BudgetService extends BaseService<Budget> {
 
             var transactions = transactionRepository.findAllById(transactionsIds);
             t.setTransactions(transactions);
-            return Optional.ofNullable(super.updateChangedOnly(t, oldBudget.get()));
+            return Optional.ofNullable(super.updateFields(t, oldBudget.get()));
         }
         return Optional.empty();
     }
@@ -73,7 +68,7 @@ public class BudgetService extends BaseService<Budget> {
     public static BudgetDTO convertBudgetToDto(Budget budget) {
         List<TransactionForListDTO> transactionForListDTOS = convertTransactionsToDto(budget.getTransactions(), budget.getId(), budget.getName());
 
-        return new BudgetDTO(budget.getId(), budget.getName(), budget.getDescription(), budget.getAmount(), transactionForListDTOS,budget.getIcon());
+        return new BudgetDTO(budget.getId(), budget.getName(),  budget.getAmount(), transactionForListDTOS,budget.getIcon());
     }
 
     public List<Object[]> findBudgetsWithDynamicQuery(

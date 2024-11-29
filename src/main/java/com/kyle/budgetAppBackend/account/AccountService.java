@@ -5,20 +5,13 @@ import com.kyle.budgetAppBackend.budget.BudgetService;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
 import com.kyle.budgetAppBackend.transaction.TransactionForListDTO;
 import com.kyle.budgetAppBackend.transaction.TransactionRepository;
-import com.kyle.budgetAppBackend.transaction.TransactionService;
-import com.kyle.budgetAppBackend.user.User;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.kyle.budgetAppBackend.budget.BudgetService.convertTransactionsToDto;
 
 @Service
 public class AccountService extends BaseService<Account> {
@@ -44,7 +37,7 @@ public class AccountService extends BaseService<Account> {
 
             var transactions = transactionRepository.findAllById(transactionsIds);
             t.setTransactions(transactions);
-            return Optional.ofNullable(super.updateChangedOnly(t, oldAccount.get()));
+            return Optional.ofNullable(super.updateFields(t, oldAccount.get()));
         }
         return Optional.empty();
     }

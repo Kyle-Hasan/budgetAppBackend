@@ -1,18 +1,12 @@
 package com.kyle.budgetAppBackend.transaction;
 
 import com.kyle.budgetAppBackend.base.BaseController;
-import com.kyle.budgetAppBackend.base.VirtualScrollRequest;
-import com.kyle.budgetAppBackend.user.HomeScreenInfoDTO;
-import com.kyle.budgetAppBackend.user.User;
 import com.kyle.budgetAppBackend.user.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
 
 
 @RestController
@@ -47,7 +41,7 @@ public class TransactionController extends BaseController {
     public TransactionForListDTO saveTransaction(@RequestBody Transaction transaction) {
         var oldTransaction = transactionService.get(transaction.getId());
 
-        return TransactionService.convertTransactionToDto(oldTransaction.map(value -> transactionService.updateChangedOnly(transaction, value)).orElse(null));
+        return TransactionService.convertTransactionToDto(oldTransaction.map(value -> transactionService.updateFields(transaction, value)).orElse(null));
 
 
     }

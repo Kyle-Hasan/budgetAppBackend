@@ -7,15 +7,15 @@ import java.util.List;
 public class BudgetDTO {
     private  Long id;
     private String name;
-    private String description;
+
     private double amount;
     List<TransactionForListDTO> transactions;
     private String icon;
 
-    public BudgetDTO(Long id, String name, String description, double amount, List<TransactionForListDTO> transactions,String icon) {
+    public BudgetDTO(Long id, String name,  double amount, List<TransactionForListDTO> transactions,String icon) {
         this.id = id;
         this.name = name;
-        this.description = description;
+
         this.amount = Math.round(amount * 100.0) / 100.0;
         this.transactions = transactions;
         this.icon = icon;
@@ -37,13 +37,7 @@ public class BudgetDTO {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public double getAmount() {
         return amount;

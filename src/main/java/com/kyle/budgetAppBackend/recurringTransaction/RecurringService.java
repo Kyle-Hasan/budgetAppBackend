@@ -1,8 +1,6 @@
 package com.kyle.budgetAppBackend.recurringTransaction;
 
 import com.kyle.budgetAppBackend.account.Account;
-import com.kyle.budgetAppBackend.account.CurrentAccountDTO;
-import com.kyle.budgetAppBackend.base.BaseRepository;
 import com.kyle.budgetAppBackend.base.BaseService;
 import com.kyle.budgetAppBackend.budget.Budget;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
@@ -12,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +27,7 @@ public class RecurringService extends BaseService<RecurringTransaction> {
 
     public RecurringTransaction update(RecurringTransaction r) {
         Optional<RecurringTransaction> oldR = baseRepository.findById(r.getId());
-        return oldR.map(recurringTransaction -> updateChangedOnly(r, recurringTransaction)).orElse(null);
+        return oldR.map(recurringTransaction -> updateFields(r, recurringTransaction)).orElse(null);
     }
 
     public List<RecurringTransaction> getRecurringTransactionsForUser(Long userId) {
