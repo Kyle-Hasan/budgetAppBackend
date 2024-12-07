@@ -25,13 +25,13 @@ public class RecurringTransaction extends BaseEntity {
     private double amount;
 
     @ManyToOne()
-    @JoinColumn(name="budget_id")
-    @JsonBackReference(value = "userTransactions")
+    @JoinColumn(name="budget_id",nullable=true)
+    @JsonManagedReference(value = "userRecurringTransactions")
     private Budget budget;
 
     @ManyToOne()
-    @JoinColumn(name="account_id")
-    @JsonBackReference(value = "userTransactionsAccount")
+    @JoinColumn(name="account_id", nullable = true)
+    @JsonBackReference(value = "userRecurringTransactionsAccount")
     private Account account;
     @Column(nullable = false)
 

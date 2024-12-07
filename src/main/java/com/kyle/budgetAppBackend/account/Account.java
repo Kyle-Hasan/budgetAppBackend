@@ -2,6 +2,7 @@ package com.kyle.budgetAppBackend.account;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kyle.budgetAppBackend.base.BaseEntity;
+import com.kyle.budgetAppBackend.recurringTransaction.RecurringTransaction;
 import com.kyle.budgetAppBackend.transaction.Transaction;
 import jakarta.persistence.*;
 
@@ -28,6 +29,12 @@ public class Account extends BaseEntity {
     @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
     @JsonManagedReference(value = "userTransactionsAccount")
     private List<Transaction> transactions = new ArrayList<Transaction>();
+
+
+
+    @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL)
+    @JsonManagedReference(value = "userRecurringTransactionsAccount")
+    private List<RecurringTransaction> recurringTransactions = new ArrayList<RecurringTransaction>();
 
     public String getName() {
         return name;
@@ -59,6 +66,14 @@ public class Account extends BaseEntity {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public List<RecurringTransaction> getRecurringTransactions() {
+        return recurringTransactions;
+    }
+
+    public void setRecurringTransactions(List<RecurringTransaction> recurringTransactions) {
+        this.recurringTransactions = recurringTransactions;
     }
 
 
