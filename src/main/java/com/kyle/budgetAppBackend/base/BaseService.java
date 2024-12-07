@@ -1,5 +1,6 @@
 package com.kyle.budgetAppBackend.base;
 
+import com.kyle.budgetAppBackend.notifications.NotificationController;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,15 +12,22 @@ import java.util.Optional;
 
 public abstract class BaseService<T extends BaseEntity> {
 
+
+
+    protected final NotificationController notificationController;
+
     protected BaseRepository<T> baseRepository;
 
-    public BaseService(BaseRepository<T> baseRepository) {
+    public BaseService(BaseRepository<T> baseRepository,NotificationController notificationController) {
         this.baseRepository = baseRepository;
+        this.notificationController = notificationController;
     }
 
 
-    public T create(T t) {
-        return baseRepository.save(t);
+    public T create(T t,String entityType) {
+        T retVal=  baseRepository.save(t);
+        notificationController.invalidateCache(entityType,true);
+        return retVal;
     }
     @PreAuthorize("this.checkAuthorizationById(#t.getId())")
     public Optional<T> updateOverwrite(T t) {
@@ -32,7 +40,7 @@ public abstract class BaseService<T extends BaseEntity> {
     }
 
     @PreAuthorize("this.checkAuthorization(#oldT)")
-    public T updateFields(T t, T oldT) {
+    public T updateFields(T t, T oldT, String entityType) {
         Field[] fields = oldT.getClass().getDeclaredFields();
         t.setCreatedBy(oldT.getCreatedBy());
         t.setCreatedAt(oldT.getCreatedAt());
@@ -50,7 +58,7 @@ public abstract class BaseService<T extends BaseEntity> {
 
         }
 
-
+        this.notificationController.invalidateCache(entityType,true );
         return this.baseRepository.save(oldT);
     }
 
@@ -66,9 +74,10 @@ public abstract class BaseService<T extends BaseEntity> {
     }
 
     @PreAuthorize("this.checkAuthorizationById(#id)")
-    public void delete(Long id) {
+    public void delete(Long id,String entityType) {
 
         baseRepository.deleteById(id);
+        this.notificationController.invalidateCache(entityType,true );
     }
 
     public boolean checkAuthorization(T entity) {

@@ -2,6 +2,7 @@ package com.kyle.budgetAppBackend.account;
 
 import com.kyle.budgetAppBackend.base.BaseService;
 import com.kyle.budgetAppBackend.budget.BudgetService;
+import com.kyle.budgetAppBackend.notifications.NotificationController;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
 import com.kyle.budgetAppBackend.transaction.TransactionForListDTO;
 import com.kyle.budgetAppBackend.transaction.TransactionRepository;
@@ -18,9 +19,10 @@ public class AccountService extends BaseService<Account> {
 
     private TransactionRepository transactionRepository;
     private AccountRepository accountRepository;
+    private final String entityName = "account";
 
-    public AccountService(AccountRepository accountRepository, TransactionRepository transactionRepository) {
-        super(accountRepository);
+    public AccountService(AccountRepository accountRepository, TransactionRepository transactionRepository, NotificationController notificationController) {
+        super(accountRepository,notificationController);
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
     }
@@ -37,7 +39,7 @@ public class AccountService extends BaseService<Account> {
 
             var transactions = transactionRepository.findAllById(transactionsIds);
             t.setTransactions(transactions);
-            return Optional.ofNullable(super.updateFields(t, oldAccount.get()));
+            return Optional.ofNullable(super.updateFields(t, oldAccount.get(),entityName));
         }
         return Optional.empty();
     }
@@ -57,6 +59,15 @@ public class AccountService extends BaseService<Account> {
         arr[0] = minDateString;
         arr[1] = todayString;
         return arr;
+    }
+
+    public void delete(long id) {
+        super.delete(id,entityName);
+    }
+
+    public Account create(Account a) {
+
+        return super.create(a,entityName);
     }
 
 

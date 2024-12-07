@@ -7,6 +7,7 @@ import com.kyle.budgetAppBackend.base.VirtualScrollRequest;
 import com.kyle.budgetAppBackend.budget.BudgetGoalDTO;
 import com.kyle.budgetAppBackend.budget.BudgetRepository;
 import com.kyle.budgetAppBackend.budget.BudgetService;
+import com.kyle.budgetAppBackend.notifications.NotificationController;
 import com.kyle.budgetAppBackend.role.Role;
 import com.kyle.budgetAppBackend.role.RoleRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,8 +35,8 @@ public class UserService extends BaseService<User> {
     private PasswordEncoder passwordEncoder;
 
 
-    public UserService(UserRepository baseRepository, RoleRepository roleRepository, BudgetService budgetService, AccountRepository accountRepository, PasswordEncoder passwordEncoder) {
-        super(baseRepository);
+    public UserService(UserRepository baseRepository, RoleRepository roleRepository, BudgetService budgetService, AccountRepository accountRepository, PasswordEncoder passwordEncoder, NotificationController notificationController) {
+        super(baseRepository,notificationController);
         this.userRepository = baseRepository;
         this.roleRepository = roleRepository;
         this.budgetService = budgetService;

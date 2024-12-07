@@ -81,7 +81,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        userService.delete(id);
+        userService.delete(id,"user");
     }
 
     @GetMapping("/budgetScreen")

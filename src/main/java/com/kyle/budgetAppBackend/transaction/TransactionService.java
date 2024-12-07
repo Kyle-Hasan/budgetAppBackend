@@ -4,6 +4,7 @@ import com.kyle.budgetAppBackend.base.BaseRepository;
 import com.kyle.budgetAppBackend.base.BaseService;
 import com.kyle.budgetAppBackend.base.VirtualScrollRequest;
 import com.kyle.budgetAppBackend.budget.BudgetGoalDTO;
+import com.kyle.budgetAppBackend.notifications.NotificationController;
 import com.kyle.budgetAppBackend.user.HomeScreenInfoDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -18,9 +19,11 @@ public class TransactionService extends BaseService<Transaction> {
     @PersistenceContext
     private EntityManager entityManager;
 
+    private final String entityName = "transaction";
+
     private TransactionRepository transactionRepository;
-    public TransactionService(TransactionRepository transactionRepository) {
-        super(transactionRepository);
+    public TransactionService(TransactionRepository transactionRepository, NotificationController notificationController) {
+        super(transactionRepository,notificationController);
         this.transactionRepository = transactionRepository;
     }
 
@@ -42,6 +45,26 @@ public class TransactionService extends BaseService<Transaction> {
         }
         return new TransactionForListDTO(t.getId(),t.getAmount(),t.getName(),t.getDate(),account,budget,type);
 
+    }
+
+    public void delete(long id) {
+        invalidateConnectedCaches();
+        super.delete(id,entityName);
+    }
+
+    public Transaction create(Transaction t) {
+        invalidateConnectedCaches();
+        return super.create(t,entityName);
+    }
+
+    public Transaction updateFields(Transaction newT, Transaction old) {
+        invalidateConnectedCaches();
+        return super.updateFields(newT,old,entityName);
+    }
+
+    private void invalidateConnectedCaches() {
+        notificationController.invalidateCache("budget",true);
+        notificationController.invalidateCache("account",true);
     }
 
     public List<Transaction> findTransactionsWithDynamicQuery(

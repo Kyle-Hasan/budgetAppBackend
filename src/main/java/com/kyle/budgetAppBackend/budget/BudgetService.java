@@ -1,6 +1,7 @@
 package com.kyle.budgetAppBackend.budget;
 
 import com.kyle.budgetAppBackend.base.BaseService;
+import com.kyle.budgetAppBackend.notifications.NotificationController;
 import com.kyle.budgetAppBackend.transaction.*;
 import com.kyle.budgetAppBackend.user.HomeScreenInfoDTO;
 import jakarta.persistence.EntityManager;
@@ -16,12 +17,13 @@ import java.util.stream.Collectors;
 public class BudgetService extends BaseService<Budget> {
     private TransactionRepository transactionRepository;
     private BudgetRepository budgetRepository;
+    private final String entityName = "budget";
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    public BudgetService(TransactionRepository transactionRepository, BudgetRepository budgetRepository) {
-        super(budgetRepository);
+    public BudgetService(TransactionRepository transactionRepository, BudgetRepository budgetRepository, NotificationController notificationController) {
+        super(budgetRepository,notificationController);
         this.transactionRepository = transactionRepository;
         this.budgetRepository = budgetRepository;
     }
@@ -37,17 +39,21 @@ public class BudgetService extends BaseService<Budget> {
 
             var transactions = transactionRepository.findAllById(transactionsIds);
             t.setTransactions(transactions);
-            return Optional.ofNullable(super.updateFields(t, oldBudget.get()));
+            return Optional.ofNullable(super.updateFields(t, oldBudget.get(),entityName));
         }
         return Optional.empty();
     }
 
-    @Override
+    public void delete(long id) {
+        super.delete(id,entityName);
+    }
+
+
     public Budget create(Budget budget) {
 
         // check if any new transactions exist
         List<Transaction> uncreated = budget.getTransactions().stream().filter(t -> t.getId() == -1).toList();
-        Budget retVal = super.create(budget);
+        Budget retVal = super.create(budget,entityName);
 
         return retVal;
     }

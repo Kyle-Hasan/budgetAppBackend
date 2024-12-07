@@ -40,6 +40,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/login", "/api/users/signup", "/error", "/api/users/logout").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/api/users/homescreen/**").hasAnyAuthority("USER")
                         .anyRequest().authenticated()
                 )

@@ -1,6 +1,7 @@
 package com.kyle.budgetAppBackend.budget;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.recurringTransaction.RecurringTransaction;
@@ -28,7 +29,7 @@ public class Budget extends BaseEntity {
     private List<Transaction> transactions = new ArrayList<Transaction>();
 
 
-
+    @JsonIgnore
     @OneToMany(mappedBy = "budget", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "userRecurringTransactions")
     private List<RecurringTransaction> recurringTransactions = new ArrayList<RecurringTransaction>();

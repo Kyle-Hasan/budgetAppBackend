@@ -3,6 +3,7 @@ package com.kyle.budgetAppBackend.recurringTransaction;
 import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.base.BaseService;
 import com.kyle.budgetAppBackend.budget.Budget;
+import com.kyle.budgetAppBackend.notifications.NotificationController;
 import com.kyle.budgetAppBackend.transaction.ParentEntity;
 import com.kyle.budgetAppBackend.transaction.Transaction;
 import com.kyle.budgetAppBackend.transaction.TransactionRepository;
@@ -19,15 +20,16 @@ import java.util.Optional;
 public class RecurringService extends BaseService<RecurringTransaction> {
     private RecurringRepository recurringRepository;
     private TransactionRepository transactionRepository;
-    public RecurringService(RecurringRepository recurringRepository,TransactionRepository transactionRepository) {
-        super(recurringRepository);
+    private final String entityName=  "recurringTransaction";
+    public RecurringService(RecurringRepository recurringRepository, TransactionRepository transactionRepository, NotificationController notificationController) {
+        super(recurringRepository,notificationController);
         this.recurringRepository = recurringRepository;
         this.transactionRepository = transactionRepository;
     }
 
     public RecurringTransaction update(RecurringTransaction r) {
         Optional<RecurringTransaction> oldR = baseRepository.findById(r.getId());
-        return oldR.map(recurringTransaction -> updateFields(r, recurringTransaction)).orElse(null);
+        return oldR.map(recurringTransaction -> updateFields(r, recurringTransaction,entityName)).orElse(null);
     }
 
     public List<RecurringTransaction> getRecurringTransactionsForUser(Long userId) {
@@ -47,6 +49,14 @@ public class RecurringService extends BaseService<RecurringTransaction> {
         }
         return new RecurringTransactionDTO(r.getId(),r.getAmount(),r.getName(),r.getFrequency(),r.getTransactionType(),account,budget,r.getIcon());
 
+    }
+
+    public void delete(long id) {
+        super.delete(id,entityName);
+    }
+
+    public RecurringTransaction create(RecurringTransaction r) {
+        return super.create(r,entityName);
     }
 
     @Scheduled(cron = "0 0 0 * * *")
