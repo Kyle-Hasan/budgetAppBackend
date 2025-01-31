@@ -13,22 +13,22 @@ import java.util.Optional;
 public abstract class BaseService<T extends BaseEntity> {
 
 
-
     protected final NotificationController notificationController;
 
     protected BaseRepository<T> baseRepository;
 
-    public BaseService(BaseRepository<T> baseRepository,NotificationController notificationController) {
+    public BaseService(BaseRepository<T> baseRepository, NotificationController notificationController) {
         this.baseRepository = baseRepository;
         this.notificationController = notificationController;
     }
 
 
-    public T create(T t,String entityType) {
-        T retVal=  baseRepository.save(t);
-        notificationController.invalidateCache(entityType,true);
+    public T create(T t, String entityType) {
+        T retVal = baseRepository.save(t);
+        notificationController.invalidateCache(entityType, true);
         return retVal;
     }
+
     @PreAuthorize("this.checkAuthorizationById(#t.getId())")
     public Optional<T> updateOverwrite(T t) {
 
@@ -58,7 +58,7 @@ public abstract class BaseService<T extends BaseEntity> {
 
         }
 
-        this.notificationController.invalidateCache(entityType,true );
+        this.notificationController.invalidateCache(entityType, true);
         return this.baseRepository.save(oldT);
     }
 
@@ -74,28 +74,28 @@ public abstract class BaseService<T extends BaseEntity> {
     }
 
     @PreAuthorize("this.checkAuthorizationById(#id)")
-    public void delete(Long id,String entityType) {
+    public void delete(Long id, String entityType) {
 
         baseRepository.deleteById(id);
-        this.notificationController.invalidateCache(entityType,true );
+        this.notificationController.invalidateCache(entityType, true);
     }
 
     public boolean checkAuthorization(T entity) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        var creator =  entity.getCreatedBy();
-        if(creator == null) {
+        var creator = entity.getCreatedBy();
+        if (creator == null) {
             return false;
-        }
-        else {
-          return  creator.getUsername().equals(username);
+        } else {
+            return creator.getUsername().equals(username);
         }
 
     }
 
-    public  boolean checkAuthorizationById(Long id) {
+    // check if user is allowed to edit this entity
+    public boolean checkAuthorizationById(Long id) {
         Optional<T> optionalT = baseRepository.findById(id);
-        if(optionalT.isEmpty()) {
+        if (optionalT.isEmpty()) {
             return false;
         }
         return (checkAuthorization(optionalT.get()));
@@ -105,12 +105,10 @@ public abstract class BaseService<T extends BaseEntity> {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
-
 
 
 }

@@ -1,11 +1,9 @@
 package com.kyle.budgetAppBackend.user;
 
 import com.kyle.budgetAppBackend.account.AccountRepository;
-import com.kyle.budgetAppBackend.account.CurrentAccountDTO;
 import com.kyle.budgetAppBackend.base.BaseService;
 import com.kyle.budgetAppBackend.base.VirtualScrollRequest;
 import com.kyle.budgetAppBackend.budget.BudgetGoalDTO;
-import com.kyle.budgetAppBackend.budget.BudgetRepository;
 import com.kyle.budgetAppBackend.budget.BudgetService;
 import com.kyle.budgetAppBackend.notifications.NotificationController;
 import com.kyle.budgetAppBackend.role.Role;

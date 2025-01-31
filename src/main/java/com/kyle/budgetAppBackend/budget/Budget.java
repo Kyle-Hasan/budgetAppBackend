@@ -1,16 +1,14 @@
 package com.kyle.budgetAppBackend.budget;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.recurringTransaction.RecurringTransaction;
 import com.kyle.budgetAppBackend.transaction.Transaction;
-import com.kyle.budgetAppBackend.user.User;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity

@@ -3,7 +3,7 @@ package com.kyle.budgetAppBackend.notifications;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-
+// mainly used to tell subscribers to invalidate cache in a pub/sub way
 @Controller
 public class NotificationController {
 

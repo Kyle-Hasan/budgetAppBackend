@@ -33,7 +33,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         this.tokenService = tokenService;
         this.userDetailsService = userDetailsService;
     }
-
+    // runs every request to validate jwt
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -52,7 +52,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bad Token");
             }
         }
-
+        // validates token if theres a username on it and nothing has been validated yet
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
@@ -63,6 +63,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // set security context so that other stuff in the request can now view this validated user
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
         }

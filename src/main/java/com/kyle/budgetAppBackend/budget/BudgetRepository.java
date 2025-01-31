@@ -1,13 +1,11 @@
 package com.kyle.budgetAppBackend.budget;
 
 import com.kyle.budgetAppBackend.base.BaseRepository;
-import jakarta.persistence.SqlResultSetMapping;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 public interface BudgetRepository extends BaseRepository<Budget> {

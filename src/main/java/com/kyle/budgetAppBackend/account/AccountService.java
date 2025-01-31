@@ -22,13 +22,13 @@ public class AccountService extends BaseService<Account> {
     private final String entityName = "account";
 
     public AccountService(AccountRepository accountRepository, TransactionRepository transactionRepository, NotificationController notificationController) {
-        super(accountRepository,notificationController);
+        super(accountRepository, notificationController);
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
     }
 
 
-    public Optional<Account> updateChangedOnly (Account t) {
+    public Optional<Account> updateChangedOnly(Account t) {
         Optional<Account> oldAccount = baseRepository.findById(t.getId());
         if (oldAccount.isPresent()) {
             var transactionsIds = t.getTransactions().stream()
@@ -39,7 +39,7 @@ public class AccountService extends BaseService<Account> {
 
             var transactions = transactionRepository.findAllById(transactionsIds);
             t.setTransactions(transactions);
-            return Optional.ofNullable(super.updateFields(t, oldAccount.get(),entityName));
+            return Optional.ofNullable(super.updateFields(t, oldAccount.get(), entityName));
         }
         return Optional.empty();
     }
@@ -62,48 +62,44 @@ public class AccountService extends BaseService<Account> {
     }
 
     public void delete(long id) {
-        super.delete(id,entityName);
+        super.delete(id, entityName);
     }
 
     public Account create(Account a) {
 
-        return super.create(a,entityName);
+        return super.create(a, entityName);
     }
 
 
     public CurrentAccountDTO getAccountInfo(Long userId, Long accountId) {
         String[] dateRanges = getDateStrings();
-        var currentAccountObjs = accountRepository.getAccountUser(userId,accountId,dateRanges[0],dateRanges[1]);
+        var currentAccountObjs = accountRepository.getAccountUser(userId, accountId, dateRanges[0], dateRanges[1]);
 
-        List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4],(String)o[2])).toList();
-        if(currentAccountDTOs.isEmpty()) {
+        List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4], (String) o[2])).toList();
+        if (currentAccountDTOs.isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             return currentAccountDTOs.get(0);
         }
     }
 
-    public List<CurrentAccountDTO> getAccountsInfo(Long userId,String startDate,String endDate) {
-        //String[] dateRanges = getDateStrings();
-
-
-        var currentAccountObjs = accountRepository.getCurrentAccounts(startDate,endDate,userId);
-        List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4],(String)o[2])).toList();
-        return  currentAccountDTOs;
+    public List<CurrentAccountDTO> getAccountsInfo(Long userId, String startDate, String endDate) {
+        var currentAccountObjs = accountRepository.getCurrentAccounts(startDate, endDate, userId);
+        List<CurrentAccountDTO> currentAccountDTOs = currentAccountObjs.stream().map(o -> new CurrentAccountDTO((Long) o[0], (String) o[1], (Double) o[3], (Double) o[4], (String) o[2])).toList();
+        return currentAccountDTOs;
 
     }
 
-    public AccountPageDTO getAccountsPageDTO(Long userId,String startDate,String endDate)  {
-        var currentAccountsDto = getAccountsInfo(userId,startDate,endDate);
+    public AccountPageDTO getAccountsPageDTO(Long userId, String startDate, String endDate) {
+        var currentAccountsDto = getAccountsInfo(userId, startDate, endDate);
         Double total = currentAccountsDto.stream().mapToDouble(CurrentAccountDTO::getAmountDeposited).sum();
         Double totalBalance = currentAccountsDto.stream().mapToDouble(CurrentAccountDTO::getCurrentAccountBalance).sum();
-        return new AccountPageDTO(currentAccountsDto,total,totalBalance);
+        return new AccountPageDTO(currentAccountsDto, total, totalBalance);
     }
 
     public static AccountDTO convertToDto(Account a) {
         List<TransactionForListDTO> transactionForListDTOS = BudgetService.convertTransactionsToDto(a.getTransactions(), a.getId(), a.getName());
-        return new AccountDTO(a.getId(),a.getName(),a.getStartingBalance(), transactionForListDTOS,a.getIcon());
+        return new AccountDTO(a.getId(), a.getName(), a.getStartingBalance(), transactionForListDTOS, a.getIcon());
     }
 
 

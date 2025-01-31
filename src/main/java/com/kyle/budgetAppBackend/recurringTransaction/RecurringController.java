@@ -1,14 +1,13 @@
 package com.kyle.budgetAppBackend.recurringTransaction;
 
-import com.kyle.budgetAppBackend.account.Account;
+
 import com.kyle.budgetAppBackend.base.BaseController;
 import com.kyle.budgetAppBackend.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+
 import java.util.List;
-import com.kyle.budgetAppBackend.user.User;
 import org.springframework.web.server.ResponseStatusException;
 
 @RestController

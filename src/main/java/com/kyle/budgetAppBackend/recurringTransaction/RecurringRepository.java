@@ -1,7 +1,7 @@
 package com.kyle.budgetAppBackend.recurringTransaction;
 
 import com.kyle.budgetAppBackend.base.BaseRepository;
-import com.kyle.budgetAppBackend.base.BaseRepository;
+
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 

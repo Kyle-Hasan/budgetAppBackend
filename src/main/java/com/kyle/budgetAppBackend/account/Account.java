@@ -11,23 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name="accounts")
+@Table(name = "accounts")
 @EntityListeners(BaseEntity.class)
 public class Account extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
 
-
     private Double startingBalance;
-
 
 
     private String icon;
 
 
-
-    @OneToMany(mappedBy = "account",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "userTransactionsAccount")
     private List<Transaction> transactions = new ArrayList<Transaction>();
 

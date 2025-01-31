@@ -4,16 +4,11 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.kyle.budgetAppBackend.account.Account;
 import com.kyle.budgetAppBackend.base.BaseEntity;
 import com.kyle.budgetAppBackend.budget.Budget;
-import com.kyle.budgetAppBackend.transaction.Transaction;
 import com.kyle.budgetAppBackend.transaction.TransactionType;
-import com.kyle.budgetAppBackend.user.User;
+
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name="recurringTransactions")
